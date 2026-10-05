@@ -20,9 +20,17 @@ module.exports = async (req, res) => {
 
         const data = await response.json();
 
+        // Log để debug (xem CMD khi test)
+        console.log('Supabase response:', JSON.stringify(data, null, 2));
+
         if (!response.ok) {
-            return res.status(response.status).json({ 
-                error: data.error_description || 'Invalid login credentials' 
+            // Xử lý đặc biệt cho case email chưa confirm
+            const errCode = data.error_code || data.code || '';
+            const errMsg = data.error_description || data.msg || data.error || 'Invalid login credentials';
+
+            return res.status(response.status).json({
+                error: errMsg,
+                error_code: errCode
             });
         }
 
