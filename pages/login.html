@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Vân Học Làm Web</title>
+    <!-- CSS ở folder khác -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="login-container">
+        <h2>🔐 Đăng Nhập</h2>
+        <p class="subtitle">Chào mừng bạn đến với web của Vân</p>
+
+        <form id="email-login-form">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="nhap@email.com" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" placeholder="Tối thiểu 6 ký tự" required minlength="6">
+            </div>
+            <button type="submit" class="email-btn" id="submit-btn">Đăng Nhập</button>
+            <p id="message" class="message"></p>
+        </form>
+
+        <p class="switch-auth">
+            Chưa có tài khoản?
+            <a href="signup.html">Đăng ký ngay</a>
+        </p>
+    </div>
+
+    <!-- 2 file JS tách riêng -->
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/login.js"></script>
+</body>
+</html>
