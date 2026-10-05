@@ -8,6 +8,14 @@ const passwordInput = document.getElementById('password');
 const messageEl = document.getElementById('message');
 const submitBtn = document.querySelector('.email-btn');
 
+// Tự động điền email nếu URL có ?email=...
+const urlParams = new URLSearchParams(window.location.search);
+const emailFromUrl = urlParams.get('email');
+if (emailFromUrl && emailInput) {
+    emailInput.value = decodeURIComponent(emailFromUrl);
+    if (passwordInput) passwordInput.focus();
+}
+
 function showMessage(msg, type) {
     type = type || 'error';
     if (!messageEl) return;
@@ -76,6 +84,52 @@ if (form) {
             showMessage('Lỗi kết nối: ' + err.message, 'error');
         } finally {
             setLoading(false);
+        }
+    });
+}
+
+// ===== XỬ LÝ QUÊN MẬT KHẨU =====
+const forgotLink = document.getElementById('forgot-password-link');
+if (forgotLink) {
+    forgotLink.addEventListener('click', async function(e) {
+        e.preventDefault();
+        hideMessage();
+
+        const email = emailInput.value.trim();
+
+        if (!email) {
+            showMessage('Nhập email của bạn vào ô trên, rồi bấm "Quên mật khẩu?"');
+            emailInput.focus();
+            return;
+        }
+
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+            showMessage('Email không hợp lệ.');
+            return;
+        }
+
+        forgotLink.textContent = 'Đang gửi...';
+        forgotLink.style.pointerEvents = 'none';
+
+        try {
+            const response = await fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                showMessage('Lỗi: ' + (result.error || 'Không gửi được email'), 'error');
+            } else {
+                showMessage('📧 Đã gửi link đặt lại mật khẩu. Kiểm tra hộp thư (kể cả Spam)!', 'success');
+            }
+        } catch (err) {
+            showMessage('Lỗi kết nối: ' + err.message, 'error');
+        } finally {
+            forgotLink.textContent = 'Quên mật khẩu?';
+            forgotLink.style.pointerEvents = '';
         }
     });
 }

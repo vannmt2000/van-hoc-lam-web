@@ -49,9 +49,20 @@ form.addEventListener('submit', async function(e) {
         const result = await response.json();
 
         if (!response.ok) {
-            showMessage('Lỗi: ' + (result.error || 'Không đăng ký được'), 'error');
-            return;
-        }
+    const errMsg = (result.error || '').toLowerCase();
+    
+    if (errMsg.includes('already registered') || errMsg.includes('already been registered') || errMsg.includes('user already')) {
+        messageEl.innerHTML = '📧 Email này đã được đăng ký. ' +
+            '<a href="login.html?email=' + encodeURIComponent(email) + '" ' +
+            'style="color:#0ea5e9;font-weight:700;text-decoration:underline">' +
+            'Đăng nhập ngay →</a>';
+        messageEl.className = 'message show error';
+        return;
+    }
+    
+    showMessage('Lỗi: ' + (result.error || 'Không đăng ký được'), 'error');
+    return;
+}
 
         showMessage('🎉 Đăng ký thành công! Đang chuyển đến trang đăng nhập...', 'success');
         setTimeout(() => {
