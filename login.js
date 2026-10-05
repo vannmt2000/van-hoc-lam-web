@@ -8,7 +8,7 @@ if (typeof window.supabase === 'undefined') {
     throw new Error('Supabase CDN chưa load');
 }
 
-// ⚠️ Đặt tên là supabaseClient để KHÔNG trùng với window.supabase của CDN
+// Đặt tên là supabaseClient để không trùng với window.supabase
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 console.log('✅ Đã kết nối Supabase');
 
@@ -18,7 +18,6 @@ const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const messageEl = document.getElementById('message');
 const submitBtn = document.querySelector('.email-btn');
-// const signupLink = document.getElementById('signup-link');
 
 // ===== HIỂN THỊ THÔNG BÁO =====
 function showMessage(msg, type) {
@@ -40,7 +39,7 @@ function setLoading(isLoading, text) {
     submitBtn.textContent = isLoading ? 'Đang xử lý...' : text;
 }
 
-// ===== ĐĂNG NHẬP =====
+// ===== XỬ LÝ ĐĂNG NHẬP =====
 if (form) {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -55,7 +54,7 @@ if (form) {
         }
 
         setLoading(true);
-        console.log('🔐 Đăng nhập:', email);
+        console.log('🔐 Đang đăng nhập:', email);
 
         try {
             const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -70,71 +69,28 @@ if (form) {
                 let msg = error.message;
                 if (msg.includes('Invalid login credentials')) {
                     msg = '❌ Email hoặc mật khẩu không đúng. Nếu chưa có tài khoản, hãy bấm "Đăng ký ngay" bên dưới.';
-                }
                 } else if (msg.includes('Email not confirmed')) {
-                    msg = '📧 Email chưa xác nhận.';
+                    msg = '📧 Email chưa xác nhận. Vui lòng kiểm tra hộp thư.';
+                } else if (msg.includes('Too many requests')) {
+                    msg = '⏳ Bạn đã thử quá nhiều lần. Vui lòng đợi vài phút.';
                 }
                 showMessage(msg, 'error');
                 return;
             }
 
             console.log('✅ Đăng nhập OK:', data);
-            showMessage('✅ Đăng nhập thành công!', 'success');
-            alert('Đăng nhập thành công!\nEmail: ' + data.user.email);
+            showMessage('✅ Đăng nhập thành công! Đang chuyển hướng...', 'success');
+
+            setTimeout(function() {
+                alert('Đăng nhập thành công!\nEmail: ' + data.user.email);
+            }, 800);
 
         } catch (err) {
             setLoading(false);
-            console.error('Lỗi:', err);
+            console.error('Lỗi không xác định:', err);
             showMessage('Lỗi: ' + err.message, 'error');
         }
     });
 }
 
-// ===== ĐĂNG KÝ =====
-//if (signupLink) {
-    signupLink.addEventListener('click', async function(e) {
-        e.preventDefault();
-        hideMessage();
-
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        if (!email || !password) {
-            showMessage('Nhập email và mật khẩu vào 2 ô trên, rồi bấm "Đăng ký ngay".');
-            return;
-        }
-
-        if (password.length < 6) {
-            showMessage('Mật khẩu phải có ít nhất 6 ký tự.');
-            return;
-        }
-
-        setLoading(true, 'Đăng Ký');
-        console.log('📝 Đăng ký:', email);
-
-        try {
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password
-            });
-
-            setLoading(false, 'Đăng Nhập');
-
-            if (error) {
-                console.error('Lỗi đăng ký:', error);
-                showMessage('Lỗi đăng ký: ' + error.message, 'error');
-                return;
-            }
-
-            console.log('✅ Đăng ký OK:', data);
-            showMessage('🎉 Đăng ký thành công! Giờ đăng nhập được rồi.', 'success');
-
-        } catch (err) {
-            setLoading(false, 'Đăng Nhập');
-            console.error('Lỗi:', err);
-            showMessage('Lỗi: ' + err.message, 'error');
-        }
-    });
-//}
-
-console.log('✅ Script đã load xong!');
+console.log('✅ login.js đã load xong!');
