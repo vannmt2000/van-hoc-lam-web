@@ -113,12 +113,12 @@ form.addEventListener('submit', async function(e) {
         if (data.session) {
             showMessage('🎉 Đăng ký thành công! Đang chuyển hướng...', 'success');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }, 1500);
         } else {
             showMessage('🎉 Đăng ký thành công! Bây giờ bạn có thể đăng nhập.', 'success');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }, 2000);
         }
 
