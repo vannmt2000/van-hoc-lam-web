@@ -69,7 +69,8 @@ if (form) {
                 console.error('Lỗi đăng nhập:', error);
                 let msg = error.message;
                 if (msg.includes('Invalid login credentials')) {
-                    msg = '❌ Email hoặc mật khẩu không đúng.';
+                    msg = '❌ Email hoặc mật khẩu không đúng. Nếu chưa có tài khoản, hãy bấm "Đăng ký ngay" bên dưới.';
+                }
                 } else if (msg.includes('Email not confirmed')) {
                     msg = '📧 Email chưa xác nhận.';
                 }
