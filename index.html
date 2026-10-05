@@ -2,38 +2,15 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Đang chuyển hướng...</title>
+    <meta http-equiv="refresh" content="0; url=pages/login.html">
+    <script>
+        window.location.href = 'pages/login.html';
+    </script>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Đăng nhập</h2>
-        <div class="social-login">
-            <button id="google-login" class="social-btn google">
-                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google"> Đăng nhập bằng Google
-            </button>
-            <button id="facebook-login" class="social-btn facebook">
-                <img src="https://img.icons8.com/color/24/000000/facebook-new.png" alt="Facebook"> Đăng nhập bằng Facebook
-            </button>
-        </div>
-        <div class="divider">hoặc</div>
-        <form id="email-login-form">
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="Nhập email của bạn" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Mật khẩu</label>
-                <input type="password" id="password" placeholder="Nhập mật khẩu" required>
-            </div>
-            <button type="submit" class="email-btn">Đăng nhập</button>
-            <p id="message" class="message"></p>
-        </form>
-        <p class="switch-auth">Chưa có tài khoản? <a href="signup.html">Đăng ký ngay</a></p>
-    </div>
-    <script src="login.js"></script>
+    <p>Đang chuyển hướng đến trang đăng nhập... 
+        <a href="pages/login.html">Bấm vào đây nếu không tự chuyển</a>
+    </p>
 </body>
 </html>
