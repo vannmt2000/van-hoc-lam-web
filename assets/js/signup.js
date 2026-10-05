@@ -1,5 +1,5 @@
 // ============================================
-// LOGIC ĐĂNG KÝ
+// LOGIC ĐĂNG KÝ - Dùng Cloudflare Functions
 // ============================================
 
 const form = document.getElementById('signup-form');
@@ -40,22 +40,16 @@ form.addEventListener('submit', async function(e) {
     setLoading(true);
 
     try {
-        const { data, error } = await window.supabaseClient.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: { full_name: fullname }
-            }
+        const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, fullname })
         });
 
-        setLoading(false);
+        const result = await response.json();
 
-        if (error) {
-            let msg = error.message;
-            if (msg.includes('already registered')) {
-                msg = '📧 Email này đã được đăng ký rồi.';
-            }
-            showMessage(msg, 'error');
+        if (!response.ok) {
+            showMessage('Lỗi: ' + (result.error || 'Không đăng ký được'), 'error');
             return;
         }
 
@@ -65,8 +59,9 @@ form.addEventListener('submit', async function(e) {
         }, 1500);
 
     } catch (err) {
-        setLoading(false);
         showMessage('Lỗi: ' + err.message, 'error');
+    } finally {
+        setLoading(false);
     }
 });
 
