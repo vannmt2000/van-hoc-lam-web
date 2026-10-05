@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Vân Học Làm Web</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="login-container">
+        <h2>📝 Đăng Ký</h2>
+        <p class="subtitle">Tạo tài khoản mới</p>
+
+        <form id="signup-form">
+            <div class="input-group">
+                <label for="fullname">Họ và tên</label>
+                <input type="text" id="fullname" placeholder="Nguyễn Văn A" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="nhap@email.com" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" placeholder="Tối thiểu 6 ký tự" required minlength="6">
+            </div>
+            <div class="input-group">
+                <label for="confirm-password">Nhập lại mật khẩu</label>
+                <input type="password" id="confirm-password" placeholder="Nhập lại mật khẩu" required>
+            </div>
+            <button type="submit" class="email-btn" id="submit-btn">Đăng Ký</button>
+            <p id="message" class="message"></p>
+        </form>
+
+        <p class="switch-auth">
+            Đã có tài khoản?
+            <a href="login.html">Đăng nhập ngay</a>
+        </p>
+    </div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/signup.js"></script>
+</body>
+</html>
