@@ -1,8 +1,4 @@
-// ============================================
-// LOGIC ĐĂNG NHẬP
-// (Đã có supabaseClient từ config.js)
-// ============================================
-
+// login.js mới - KHÔNG còn chứa anon key
 const form = document.getElementById('email-login-form');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
@@ -11,63 +7,50 @@ const submitBtn = document.querySelector('.email-btn');
 
 function showMessage(msg, type) {
     type = type || 'error';
-    if (!messageEl) return;
     messageEl.textContent = msg;
     messageEl.className = 'message show ' + type;
 }
 
-function hideMessage() {
-    if (messageEl) messageEl.className = 'message';
-}
+form.addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-function setLoading(isLoading) {
-    if (!submitBtn) return;
-    submitBtn.disabled = isLoading;
-    submitBtn.textContent = isLoading ? 'Đang xử lý...' : 'Đăng Nhập';
-}
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-if (form) {
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        hideMessage();
+    if (!email || !password) {
+        showMessage('Vui lòng nhập đầy đủ.');
+        return;
+    }
 
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Đang xử lý...';
 
-        if (!email || !password) {
-            showMessage('Vui lòng nhập đầy đủ email và mật khẩu.');
+    try {
+        // 🔥 Gọi Netlify Function thay vì gọi Supabase trực tiếp
+        const response = await fetch('/.netlify/functions/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            showMessage('❌ Email hoặc mật khẩu không đúng.', 'error');
             return;
         }
 
-        setLoading(true);
+        // Lưu token để dùng sau
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('user', JSON.stringify(result.user));
 
-        try {
-            const { data, error } = await window.supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
+        showMessage('✅ Đăng nhập thành công!', 'success');
+        setTimeout(() => alert('Chào ' + result.user.email), 500);
 
-            setLoading(false);
-
-            if (error) {
-                let msg = error.message;
-                if (msg.includes('Invalid login credentials')) {
-                    msg = '❌ Email hoặc mật khẩu không đúng. Nếu chưa có tài khoản, hãy bấm "Đăng ký ngay".';
-                }
-                showMessage(msg, 'error');
-                return;
-            }
-
-            showMessage('✅ Đăng nhập thành công!', 'success');
-            setTimeout(function() {
-                alert('Đăng nhập thành công!\nEmail: ' + data.user.email);
-            }, 500);
-
-        } catch (err) {
-            setLoading(false);
-            showMessage('Lỗi: ' + err.message, 'error');
-        }
-    });
-}
-
-console.log('✅ login.js đã load xong!');
+    } catch (err) {
+        showMessage('Lỗi kết nối: ' + err.message, 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Đăng Nhập';
+    }
+});
