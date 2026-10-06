@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản phẩm - OTS ERP</title>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme-preload', theme);
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/products.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+<!-- ===== SPLASH ===== -->
+<div id="app-splash">
+    <div class="splash-content">
+        <div class="splash-logo">🏢</div>
+        <div class="splash-name">OTS ERP</div>
+        <div class="splash-loader"><span></span><span></span><span></span></div>
+        <div class="splash-text">Đang tải...</div>
+    </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="dash-header">
+    <div class="dash-header-left">
+        <button class="dash-menu-toggle" onclick="toggleSidebar()">
+            <i data-lucide="menu"></i>
+        </button>
+        <div class="dash-logo">
+            <span class="dash-logo-icon">🏢</span>
+            <span class="dash-logo-text">OTS ERP</span>
+        </div>
+    </div>
+
+    <div class="dash-header-center">
+        <div class="dash-search-wrap">
+            <i data-lucide="search" class="dash-search-icon"></i>
+            <input type="text" id="global-search" placeholder="Tìm kiếm..." autocomplete="off">
+        </div>
+    </div>
+
+    <div class="dash-header-right">
+        <button class="dash-icon-btn" onclick="toggleTheme()" title="Đổi giao diện">
+            <i data-lucide="sun" id="theme-icon"></i>
+        </button>
+        <button class="dash-icon-btn" onclick="alert('Thông báo')" title="Thông báo">
+            <i data-lucide="bell"></i>
+            <span class="dash-badge">3</span>
+        </button>
+        <div class="dash-user" onclick="toggleUserMenu(event)">
+            <div class="dash-user-avatar" id="user-avatar">?</div>
+            <span class="dash-user-name" id="user-name">Đang tải...</span>
+            <span class="dash-user-status-dot" id="status-dot"></span>
+            <i data-lucide="chevron-down" class="dash-user-caret"></i>
+        </div>
+    </div>
+</header>
+
+<!-- ===== USER MENU ===== -->
+<div class="dash-user-menu" id="user-menu">
+    <div class="dash-user-menu-header">
+        <div class="dash-user-avatar-lg" id="user-avatar-menu">?</div>
+        <div>
+            <div class="dash-user-menu-name" id="user-name-menu">...</div>
+            <div class="dash-user-menu-role" id="user-role-menu">...</div>
+        </div>
+    </div>
+    <div class="dash-user-menu-divider"></div>
+    <button class="dash-user-menu-item" onclick="goToProfile()">
+        <i data-lucide="user"></i><span>Hồ sơ của tôi</span>
+    </button>
+    <button class="dash-user-menu-item" onclick="changePassword()">
+        <i data-lucide="key"></i><span>Đổi mật khẩu</span>
+    </button>
+    <div class="dash-user-menu-divider"></div>
+    <button class="dash-user-menu-item danger" onclick="confirmLogout()">
+        <i data-lucide="log-out"></i><span>Đăng xuất</span>
+    </button>
+</div>
+
+<!-- ===== LAYOUT ===== -->
+<div class="dash-layout">
+    <aside class="dash-sidebar" id="sidebar">
+        <nav class="dash-sidebar-nav" id="sidebar-nav"></nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <i data-lucide="package" class="page-icon"></i>
+                    Quản Lý Sản Phẩm
+                </h1>
+                <p class="page-subtitle">Danh sách sản phẩm, nhóm hàng và nhà cung cấp</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-secondary" onclick="openManageGroupsModal()">
+                    <i data-lucide="folder-cog"></i> Quản Lý Nhóm
+                </button>
+                <button class="btn btn-secondary" onclick="openAddSupplierModal()">
+                    <i data-lucide="factory"></i> Thêm NCC
+                </button>
+                <button class="btn btn-primary" onclick="openAddProductModal()">
+                    <i data-lucide="plus-circle"></i> Thêm Sản Phẩm
+                </button>
+            </div>
+        </div>
+
+        <div class="products-stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;">
+                    <i data-lucide="package"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Tổng sản phẩm</span>
+                    <span class="stat-value" id="stat-total">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">
+                    <i data-lucide="folder"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Nhóm hàng</span>
+                    <span class="stat-value" id="stat-groups">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fef3c7; color: #d97706;">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Sắp hết kho</span>
+                    <span class="stat-value" id="stat-low-stock">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #f3e8ff; color: #8b5cf6;">
+                    <i data-lucide="factory"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Nhà cung cấp</span>
+                    <span class="stat-value" id="stat-suppliers">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-search">
+                <i data-lucide="search"></i>
+                <input type="text" id="product-search" placeholder="Tìm SKU, tên sản phẩm..." oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <select id="filter-group" onchange="applyFilters()">
+                    <option value="all">Tất cả nhóm</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <select id="filter-status" onchange="applyFilters()">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="active">Đang kinh doanh</option>
+                    <option value="inactive">Ngừng kinh doanh</option>
+                    <option value="low">Sắp hết kho</option>
+                </select>
+            </div>
+            <button class="btn-icon" onclick="resetFilters()" title="Reset">
+                <i data-lucide="rotate-ccw"></i>
+            </button>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Ảnh</th>
+                        <th class="sortable" data-sort="sku" style="width: 120px;">SKU <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th class="sortable" data-sort="name">Tên sản phẩm <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th class="sortable" data-sort="group_name" style="width: 130px;">Nhóm <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th style="width: 90px;">ĐVT</th>
+                        <th class="sortable" data-sort="purchase_price" style="width: 130px; text-align: right;">Giá nhập <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th class="sortable" data-sort="price" style="width: 130px; text-align: right;">Giá bán <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th style="width: 80px; text-align: center;">VAT</th>
+                        <th class="sortable" data-sort="stock" style="width: 100px; text-align: center;">Tồn kho <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th class="sortable" data-sort="supplier_name" style="width: 180px;">🏭 Nhà cung cấp <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th class="sortable" data-sort="imported_at" style="width: 120px; text-align: center;">📅 Ngày nhập <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+                        <th style="width: 130px; text-align: center;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="products-tbody">
+                    <tr>
+                        <td colspan="12" class="table-loading">
+                            <i data-lucide="loader-2" class="spin"></i>
+                            Đang tải dữ liệu...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+
+    </main>
+</div>
+
+<!-- =====================================================
+     MODAL: THÊM/SỬA SẢN PHẨM
+     ===================================================== -->
+<div id="modal-product" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 id="modal-product-title">Thêm Sản Phẩm Mới</h3>
+            <button class="modal-close" onclick="closeProductModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <form id="form-product" onsubmit="handleSaveProduct(event)">
+            <input type="hidden" id="prod-id" value="">
+
+            <div class="modal-body">
+
+                <!-- SECTION 1: THÔNG TIN CƠ BẢN -->
+                <div class="form-section">
+                    <h4 class="form-section-title">
+                        <i data-lucide="info"></i>
+                        Thông Tin Cơ Bản
+                    </h4>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 0 0 200px;">
+                            <label>Ảnh sản phẩm</label>
+                            <div class="image-upload" onclick="document.getElementById('prod-image').click()">
+                                <img id="prod-image-preview" src="" alt="" style="display: none;">
+                                <div id="prod-image-placeholder" class="image-placeholder">
+                                    <i data-lucide="image-plus"></i>
+                                    <span>Chọn ảnh</span>
+                                </div>
+                                <input type="file" id="prod-image" accept="image/*" onchange="handleImageUpload(this)" hidden>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="flex: 1;">
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label>Mã SKU <span class="required">*</span></label>
+                                    <input type="text" id="prod-sku" required placeholder="VD: SP-007" oninput="this.value = this.value.toUpperCase()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Đơn vị tính <span class="required">*</span></label>
+                                    <select id="prod-unit" required>
+                                        <option value="Cái">Cái</option>
+                                        <option value="Bộ">Bộ</option>
+                                        <option value="Chiếc">Chiếc</option>
+                                        <option value="Hộp">Hộp</option>
+                                        <option value="Thùng">Thùng</option>
+                                        <option value="Cuộn">Cuộn</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="Lít">Lít</option>
+                                        <option value="Mét">Mét</option>
+                                        <option value="Bao">Bao</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Tên sản phẩm <span class="required">*</span></label>
+                                <input type="text" id="prod-name" required placeholder="Nhập tên sản phẩm đầy đủ">
+                            </div>
+
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label>Nhóm hàng <span class="required">*</span></label>
+                                    <select id="prod-group" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Vị trí kho</label>
+                                    <input type="text" id="prod-location" placeholder="VD: Kệ A1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả sản phẩm</label>
+                        <textarea id="prod-description" rows="2" placeholder="Mô tả chi tiết sản phẩm..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mã vạch / QR Code</label>
+                        <div class="barcode-input">
+                            <input type="text" id="prod-barcode" placeholder="Nhập mã vạch có sẵn hoặc để trống">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="generateQRCode()">
+                                <i data-lucide="qr-code"></i> Tự sinh QR
+                            </button>
+                        </div>
+                        <div id="qr-preview" class="qr-preview" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: GIÁ -->
+                <div class="form-section">
+                    <h4 class="form-section-title">
+                        <i data-lucide="dollar-sign"></i>
+                        Giá & Lợi Nhuận
+                    </h4>
+
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label>Giá nhập (từ NCC)</label>
+                            <input type="number" id="prod-purchase-price" min="0" value="0"
+                                placeholder="0" oninput="calcProfit()">
+                            <small class="form-hint">Giá mua từ nhà cung cấp</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Giá bán chưa VAT <span class="required">*</span></label>
+                            <input type="number" id="prod-price" min="0" required value="0"
+                                placeholder="0" oninput="calcProfit()">
+                            <small class="form-hint">Giá cơ bản chưa thuế</small>
+                        </div>
+                        <div class="form-group">
+                            <label>VAT (%)</label>
+                            <select id="prod-vat" onchange="calcProfit()">
+                                <option value="0">0%</option>
+                                <option value="5">5%</option>
+                                <option value="8" selected>8%</option>
+                                <option value="10">10%</option>
+                            </select>
+                            <small class="form-hint">Thuế GTGT</small>
+                        </div>
+                    </div>
+
+                    <div class="price-summary">
+                        <div class="price-item">
+                            <span class="price-label">Giá bán CÓ VAT</span>
+                            <span class="price-value" id="calc-final-price">0 đ</span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Lợi nhuận dự kiến</span>
+                            <span class="price-value profit" id="calc-profit">0 đ</span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Tỷ suất lợi nhuận</span>
+                            <span class="price-value" id="calc-profit-rate">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: KHO -->
+                <div class="form-section">
+                    <h4 class="form-section-title">
+                        <i data-lucide="warehouse"></i>
+                        Tồn Kho & Nhập Hàng
+                    </h4>
+
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label>Tồn kho hiện tại</label>
+                            <input type="number" id="prod-stock" min="0" value="0" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Tồn tối thiểu (cảnh báo)</label>
+                            <input type="number" id="prod-min-stock" min="0" value="10" placeholder="10">
+                            <small class="form-hint">Cảnh báo khi tồn &lt; mức này</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày nhập kho</label>
+                            <input type="date" id="prod-imported-at">
+                            <small class="form-hint">Ngày SP về kho</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: NHÀ CUNG CẤP -->
+                <div class="form-section">
+                    <h4 class="form-section-title">
+                        <i data-lucide="factory"></i>
+                        Nhà Cung Cấp
+                        <button type="button" class="btn-icon btn-icon-sm" onclick="openAddSupplierModal()" title="Thêm NCC mới">
+                            <i data-lucide="plus"></i>
+                        </button>
+                    </h4>
+
+                    <div class="form-group">
+                        <label>Nhà cung cấp chính</label>
+                        <select id="prod-supplier">
+                            <option value="">-- Chưa chọn --</option>
+                        </select>
+                        <small class="form-hint">SP này được nhập từ NCC nào</small>
+                    </div>
+                </div>
+
+                <!-- TRẠNG THÁI -->
+                <div class="form-section">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="prod-active" checked>
+                        <span>Sản phẩm đang kinh doanh</span>
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="save"></i> Lưu Sản Phẩm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL: QUẢN LÝ NHÓM SẢN PHẨM
+     ===================================================== -->
+<div id="modal-manage-groups" class="modal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h3>📁 Quản Lý Nhóm Sản Phẩm</h3>
+            <button class="modal-close" onclick="closeManageGroupsModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 16px;">
+                <button class="btn btn-primary" onclick="openAddGroupModal()">
+                    <i data-lucide="plus"></i> Thêm Nhóm Mới
+                </button>
+            </div>
+            <div id="manage-groups-list" class="manage-groups-list"></div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeManageGroupsModal()">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL: THÊM/SỬA NHÓM
+     ===================================================== -->
+<div id="modal-group" class="modal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h3>Thêm Nhóm Sản Phẩm</h3>
+            <button class="modal-close" onclick="closeGroupModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <form id="form-group" onsubmit="handleSaveGroup(event)">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Tên nhóm <span class="required">*</span></label>
+                    <input type="text" id="group-name" required placeholder="VD: Máy móc">
+                </div>
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <input type="text" id="group-description" placeholder="Mô tả ngắn">
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Màu</label>
+                        <input type="color" id="group-color" value="#667eea" style="height: 40px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon (emoji)</label>
+                        <input type="text" id="group-icon" value="📦" maxlength="2" placeholder="📦">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="save"></i> Lưu Nhóm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL: THÊM NHÀ CUNG CẤP
+     ===================================================== -->
+<div id="modal-supplier" class="modal">
+    <div class="modal-content modal-md">
+        <div class="modal-header">
+            <h3>Thêm Nhà Cung Cấp</h3>
+            <button class="modal-close" onclick="closeSupplierModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <form id="form-supplier" onsubmit="handleSaveSupplier(event)">
+            <div class="modal-body">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Mã NCC</label>
+                        <input type="text" id="supp-code" placeholder="NCC-004">
+                    </div>
+                    <div class="form-group">
+                        <label>Tên nhà cung cấp <span class="required">*</span></label>
+                        <input type="text" id="supp-name" required placeholder="Công ty TNHH ABC">
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Mã số thuế</label>
+                        <input type="text" id="supp-tax-code" placeholder="0301234567">
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input type="tel" id="supp-phone" placeholder="0901234567">
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Người liên hệ</label>
+                        <input type="text" id="supp-contact" placeholder="Anh Hồng">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="supp-email" placeholder="contact@abc.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Địa chỉ</label>
+                    <input type="text" id="supp-address" placeholder="123 Lê Lợi, Q.1, TP.HCM">
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Ngân hàng</label>
+                        <input type="text" id="supp-bank-name" placeholder="Vietcombank">
+                    </div>
+                    <div class="form-group">
+                        <label>Số tài khoản</label>
+                        <input type="text" id="supp-bank-account" placeholder="0123456789">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="supp-note" rows="2" placeholder="Ghi chú nội bộ..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSupplierModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="save"></i> Lưu Nhà Cung Cấp
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL: XEM CHI TIẾT SẢN PHẨM
+     ===================================================== -->
+<div id="modal-detail" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3>Chi Tiết Sản Phẩm</h3>
+            <button class="modal-close" onclick="closeDetailModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="detail-content"></div>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL: CONFIRM
+     ===================================================== -->
+<div id="modal-confirm" class="modal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h3 id="confirm-title">Xác nhận</h3>
+            <button class="modal-close" onclick="closeConfirmModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="confirm-message">Bạn có chắc?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Hủy</button>
+            <button type="button" class="btn btn-danger" id="confirm-btn">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast"></div>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/products.js"></script>
+
+</body>
+</html>

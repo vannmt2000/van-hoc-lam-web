@@ -17,7 +17,7 @@ const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
 const STATUS_UPDATE_INTERVAL = 30 * 1000;
 
 // ============================================
-// MENU THEO ROLE — Ưu tiên Duyệt lên đầu
+// MENU THEO ROLE (có submenu)
 // ============================================
 const MENU_BY_ROLE = {
   admin: [
@@ -25,7 +25,17 @@ const MENU_BY_ROLE = {
     { id: 'approvals', icon: 'check-square', label: 'Duyệt', href: '#', badge: 5 },
     { id: 'reports', icon: 'bar-chart-3', label: 'Báo cáo', href: '#' },
     { id: 'sales', icon: 'badge-dollar-sign', label: 'Kinh doanh', href: '#' },
-    { id: 'warehouse', icon: 'package', label: 'Kho', href: '#' },
+    {
+      id: 'warehouse',
+      icon: 'warehouse',
+      label: 'Kho',
+      submenu: [
+        { id: 'products', icon: 'package', label: 'Sản phẩm', href: 'products.html' },
+        { id: 'inventory', icon: 'boxes', label: 'Tồn kho', href: '#' },
+        { id: 'import', icon: 'download', label: 'Nhập kho', href: '#' },
+        { id: 'export', icon: 'upload', label: 'Xuất kho', href: '#' }
+      ]
+    },
     { id: 'suppliers', icon: 'factory', label: 'Nhà cung cấp', href: '#' },
     { id: 'hr', icon: 'users', label: 'Nhân sự', href: '#' },
     { id: 'settings', icon: 'settings', label: 'Cài đặt', href: '#' }
@@ -34,10 +44,17 @@ const MENU_BY_ROLE = {
     { id: 'dashboard', icon: 'home', label: 'Dashboard', href: 'dashboard.html' },
     { id: 'approvals', icon: 'check-square', label: 'Duyệt', href: '#', badge: 3 },
     { id: 'tasks', icon: 'target', label: 'Task tôi', href: '#' },
-    { id: 'team-tasks', icon: 'list-checks', label: 'Task nhóm', href: '#' },
     { id: 'sales', icon: 'badge-dollar-sign', label: 'Kinh doanh', href: '#' },
-    { id: 'team', icon: 'users', label: 'NV nhóm', href: '#' },
-    { id: 'warehouse', icon: 'package', label: 'Xem kho', href: '#' }
+    {
+      id: 'warehouse',
+      icon: 'warehouse',
+      label: 'Kho',
+      submenu: [
+        { id: 'products', icon: 'package', label: 'Sản phẩm', href: 'products.html' },
+        { id: 'inventory', icon: 'boxes', label: 'Tồn kho', href: '#' }
+      ]
+    },
+    { id: 'team', icon: 'users', label: 'NV nhóm', href: '#' }
   ],
   hr: [
     { id: 'dashboard', icon: 'home', label: 'Dashboard', href: 'dashboard.html' },
@@ -57,9 +74,18 @@ const MENU_BY_ROLE = {
   staff: [
     { id: 'dashboard', icon: 'home', label: 'Dashboard', href: 'dashboard.html' },
     { id: 'tasks', icon: 'target', label: 'Task tôi', href: '#' },
+    {
+      id: 'sales',
+      icon: 'badge-dollar-sign',
+      label: 'Kinh doanh',
+      submenu: [
+        { id: 'customers', icon: 'users', label: 'Khách hàng', href: '#' },
+        { id: 'orders', icon: 'file-text', label: 'Đơn hàng', href: '#' },
+        { id: 'products', icon: 'package', label: 'Sản phẩm', href: 'products.html' }
+      ]
+    },
     { id: 'work', icon: 'briefcase', label: 'Công việc', href: '#' },
     { id: 'colleagues', icon: 'users', label: 'Đồng nghiệp', href: '#' },
-    { id: 'leave', icon: 'plane', label: 'Xin nghỉ phép', href: '#' },
     { id: 'chat', icon: 'message-circle', label: 'Chat', href: '#' }
   ]
 };
@@ -241,19 +267,57 @@ function renderSidebar() {
   const role = (currentProfile && currentProfile.role) || 'staff';
   const menus = MENU_BY_ROLE[role] || MENU_BY_ROLE.staff;
 
+  // Xác định trang hiện tại để highlight
+  const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+
   let html = '';
+
   menus.forEach(item => {
-    const activeClass = item.id === 'dashboard' ? ' active' : '';
-    html += '<button class="sidebar-item' + activeClass + '" onclick="navigateTo(\'' + item.href + '\')">';
-    html += '<i data-lucide="' + item.icon + '"></i>';
-    html += '<span>' + item.label + '</span>';
-    if (item.badge) {
-      html += '<span class="sidebar-badge">' + item.badge + '</span>';
+    if (item.submenu && item.submenu.length > 0) {
+      // === MENU CÓ SUBMENU ===
+      const hasActiveChild = item.submenu.some(sub => sub.href === currentPage);
+      const isExpanded = hasActiveChild; // Auto mở nếu có con active
+
+      html += '<div class="sidebar-group">';
+      html += '<button class="sidebar-item sidebar-parent ' + (hasActiveChild ? 'has-active' : '') + '" onclick="toggleSubmenu(\'' + item.id + '\')">';
+      html += '<i data-lucide="' + item.icon + '"></i>';
+      html += '<span>' + item.label + '</span>';
+      html += '<i data-lucide="chevron-down" class="submenu-caret"></i>';
+      html += '</button>';
+
+      html += '<div class="sidebar-submenu ' + (isExpanded ? 'show' : '') + '" id="submenu-' + item.id + '">';
+      item.submenu.forEach(sub => {
+        const isActive = sub.href === currentPage;
+        html += '<button class="sidebar-item sidebar-child ' + (isActive ? 'active' : '') + '" onclick="navigateTo(\'' + sub.href + '\')">';
+        html += '<i data-lucide="' + sub.icon + '"></i>';
+        html += '<span>' + sub.label + '</span>';
+        html += '</button>';
+      });
+      html += '</div>';
+      html += '</div>';
+    } else {
+      // === MENU THƯỜNG ===
+      const isActive = item.href === currentPage ||
+        (item.id === 'dashboard' && currentPage === 'dashboard.html');
+      html += '<button class="sidebar-item ' + (isActive ? 'active' : '') + '" onclick="navigateTo(\'' + item.href + '\')">';
+      html += '<i data-lucide="' + item.icon + '"></i>';
+      html += '<span>' + item.label + '</span>';
+      if (item.badge) {
+        html += '<span class="sidebar-badge">' + item.badge + '</span>';
+      }
+      html += '</button>';
     }
-    html += '</button>';
   });
+
   nav.innerHTML = html;
   if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// Toggle submenu
+function toggleSubmenu(id) {
+  const submenu = document.getElementById('submenu-' + id);
+  if (!submenu) return;
+  submenu.classList.toggle('show');
 }
 
 // ============================================
