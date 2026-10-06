@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - Vân Học Làm Web</title>
-    <!-- CSS ở folder khác -->
+    <title>Đăng nhập - OTS ERP</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
     <div class="login-container">
         <h2>🔐 Đăng Nhập</h2>
-        <p class="subtitle">Chào mừng bạn đến với web của Vân</p>
+        <p class="subtitle">Chào mừng bạn đến với OTS ERP</p>
 
         <form id="email-login-form">
             <div class="input-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="nhap@email.com" required>
+                <input type="email" id="email" placeholder="nhap@ots.com" required>
             </div>
             <div class="input-group">
                 <label for="password">Mật khẩu</label>
@@ -26,15 +26,10 @@
         </form>
 
         <p class="switch-auth">
-            Chưa có tài khoản?
-            <a href="signup.html">Đăng ký ngay</a>
+            <a href="#" id="forgot-password-link">Quên mật khẩu?</a>
         </p>
-        <p class="switch-auth">
-    <a href="#" id="forgot-password-link">Quên mật khẩu?</a>
-</p>
     </div>
 
-    <!-- 2 file JS tách riêng -->
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/login.js"></script>
 </body>

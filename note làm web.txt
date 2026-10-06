@@ -1,0 +1,392 @@
+Được! Tui tổng hợp lại **toàn bộ hành trình** hôm nay cho bạn. Lưu lại để sau này cần tra cứu hoặc viết báo cáo đồ án nha.
+
+---
+
+# 📘 TỔNG KẾT DỰ ÁN WEB LOGIN
+
+## 🎯 MỤC TIÊU
+Xây dựng trang web login/đăng ký có xác thực email, quên mật khẩu, chạy trên internet cho người ngoài truy cập được — **100% miễn phí**.
+
+---
+
+## 🏗️ KIẾN TRÚC TỔNG THỂ
+
+```
+[User Browser]
+     ↓ HTTPS
+[Frontend: HTML/CSS/JS] ← Host trên Vercel
+     ↓ Fetch API
+[Serverless Functions] ← Chạy trên Vercel (/api/*)
+     ↓ HTTPS
+[Backend: Supabase] ← Database + Auth
+     ↓ SMTP
+[Gmail SMTP] ← Gửi email xác nhận
+```
+
+---
+
+## 🛠️ CÔNG CỤ ĐÃ DÙNG
+
+### 1. Database + Backend
+
+| Thành phần | Dịch vụ | Gói | Vai trò |
+|-----------|---------|-----|---------|
+| **Database** | Supabase (PostgreSQL) | Free | Lưu user, session |
+| **Authentication** | Supabase Auth | Free | Đăng nhập, xác thực email |
+| **Email SMTP** | Gmail | Free | Gửi mail xác nhận/reset |
+
+**Thông tin Supabase project:**
+- **Tên:** `van-hoc-lam-web`
+- **URL:** `https://pffbnfysvhiumzhfvnos.supabase.co`
+- **Region:** Asia-Pacific (Singapore)
+- **Plan:** Free
+
+### 2. Hosting
+
+| Thành phần | Dịch vụ | Vai trò |
+|-----------|---------|---------|
+| **Frontend + Functions** | Vercel | Host web + API |
+| **Domain** | `van-hoc-lam-web.vercel.app` | Domain miễn phí |
+| **SSL/HTTPS** | Vercel (tự động) | Bảo mật |
+
+**Link production:** `https://van-hoc-lam-web.vercel.app`
+
+### 3. Quản lý code
+
+| Thành phần | Dịch vụ | Vai trò |
+|-----------|---------|---------|
+| **Source code** | GitHub | Lưu code (repo: `vannt2000/van-hoc-lam-web`) |
+| **Git client** | GitHub Desktop | Commit + push dễ dàng |
+
+---
+
+## 💻 CÀI ĐẶT MÁY LOCAL
+
+### Công cụ cần cài
+
+| # | Công cụ | Version | Chức năng |
+|---|---------|---------|-----------|
+| 1 | **Git** | 2.49.0 | Quản lý version code |
+| 2 | **Node.js** | v22.15.0 (LTS) | Chạy npm, Vercel CLI |
+| 3 | **npm** | 10.9.2 | Cài package |
+| 4 | **Vercel CLI** | 62.2.0 | Chạy dev server local |
+| 5 | **VS Code** | (mới nhất) | Viết code |
+| 6 | **GitHub Desktop** | (mới nhất) | Commit/push code |
+
+### Extension VS Code đã cài
+
+- **Prettier** — Format code tự động
+- **Live Server** — Chạy HTML tĩnh (không dùng cho project này)
+- **Vietnamese Language Pack** — Giao diện tiếng Việt
+
+---
+
+## 📁 CẤU TRÚC THƯ MỤC DỰ ÁN
+
+```
+van-hoc-lam-web/
+│
+├── .env                    ← Biến môi trường LOCAL (không push)
+├── .env.local              ← Biến môi trường Vercel pull về (không push)
+├── .gitignore              ← Chặn .env* khỏi GitHub
+│
+├── api/                    ← Vercel Serverless Functions
+│   ├── login.js            ← API đăng nhập
+│   ├── signup.js           ← API đăng ký
+│   ├── forgot-password.js  ← API quên mật khẩu
+│   ├── reset-password.js   ← API đặt lại mật khẩu
+│   └── check-confirm.js    ← API check email confirm (cũ)
+│
+├── assets/
+│   ├── css/
+│   │   └── style.css       ← CSS dùng chung
+│   └── js/
+│       ├── config.js       ← Config chung
+│       ├── login.js        ← Logic login
+│       ├── signup.js       ← Logic signup
+│       └── reset-password.js ← Logic reset pass
+│
+├── pages/
+│   ├── login.html          ← Trang đăng nhập
+│   ├── signup.html         ← Trang đăng ký
+│   └── reset-password.html ← Trang đặt lại mật khẩu
+│
+├── index.html              ← Redirect về pages/login.html
+├── package.json            ← Dependencies
+└── README.md
+```
+
+---
+
+## 🔑 BIẾN MÔI TRƯỜNG (Environment Variables)
+
+### Trên Vercel (Settings → Environment Variables)
+
+| Key | Value |
+|-----|-------|
+| `SUPABASE_URL` | `https://pffbnfysvhiumzhfvnos.supabase.co` |
+| `SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIs...` |
+
+### Trên máy local (file `.env`)
+
+Giống hệt Vercel — Vercel CLI tự pull về khi chạy `vercel env pull`.
+
+**File `.env` nội dung:**
+```
+SUPABASE_URL=https://pffbnfysvhiumzhfvnos.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
+```
+
+> ⚠️ **KHÔNG BAO GIỜ** commit `.env` lên GitHub. `.gitignore` đã chặn.
+
+---
+
+## ⚙️ CẤU HÌNH SUPABASE
+
+### Authentication
+
+| Setting | Giá trị |
+|---------|---------|
+| **Email Provider** | ✅ Enabled |
+| **Confirm email** | ✅ ON (yêu cầu xác nhận) |
+| **Minimum password length** | 6 |
+
+### URL Configuration
+
+| Trường | Giá trị |
+|--------|---------|
+| **Site URL** | `http://localhost:3000` (dev) hoặc `https://van-hoc-lam-web.vercel.app` (prod) |
+| **Redirect URLs** | `http://localhost:3000/**`<br>`https://van-hoc-lam-web.vercel.app/**` |
+
+### SMTP Settings (Custom Email)
+
+| Trường | Giá trị |
+|--------|---------|
+| **Host** | `smtp.gmail.com` |
+| **Port** | `465` |
+| **Username** | `vanlibra1409@gmail.com` |
+| **Password** | App Password (16 ký tự) |
+| **Sender name** | `Vân Học Làm Web` |
+
+---
+
+## 🔄 QUY TRÌNH LÀM VIỆC HÀNG NGÀY
+
+### 1. Chạy dev server
+
+```bash
+cd D:\Download\Self-Learning\van-hoc-lam-web
+vercel dev
+```
+
+→ Mở `http://localhost:3000/pages/login.html`
+
+### 2. Sửa code trong VS Code
+
+- Sửa `.js`, `.html`, `.css` → Vercel dev tự reload
+- Sửa `api/*.js` → phải **Ctrl + C** rồi chạy lại `vercel dev`
+
+### 3. Test local
+
+Ctrl + Shift + R để hard refresh trình duyệt.
+
+### 4. Push lên production
+
+- **GitHub Desktop** → Commit → Push
+- **Vercel** tự động deploy trong ~1 phút
+
+---
+
+## 🚀 CÁC TÍNH NĂNG ĐÃ HOÀN THÀNH
+
+| # | Tính năng | Trạng thái |
+|---|-----------|-----------|
+| 1 | Đăng nhập (email/password) | ✅ |
+| 2 | Đăng ký với xác thực email | ✅ |
+| 3 | Gửi lại email xác nhận | ✅ |
+| 4 | Quên mật khẩu → gửi link reset | ✅ |
+| 5 | Đặt lại mật khẩu qua link | ✅ |
+| 6 | Auto-fill email từ URL | ✅ |
+| 7 | Deploy production | ✅ |
+| 8 | Chạy local với Vercel CLI | ✅ |
+
+---
+
+## 🎓 KIẾN THỨC ĐÃ HỌC
+
+### Về Frontend
+- HTML form + validation
+- Fetch API gọi backend
+- LocalStorage lưu token
+- Query params, hash params
+- Xử lý loading/error state
+
+### Về Backend
+- Serverless Functions (Vercel)
+- REST API design
+- Environment Variables
+- SMTP email sending
+- Supabase Auth API
+
+### Về Bảo mật
+- `anon key` vs `service_role key`
+- Row Level Security (RLS)
+- User Enumeration Attack
+- OWASP best practices
+
+### Về DevTools
+- Git + GitHub
+- Vercel CLI
+- VS Code shortcuts
+- Chrome DevTools (Console, Network)
+
+---
+
+## 💰 CHI PHÍ
+
+| Dịch vụ | Gói | Chi phí |
+|---------|-----|---------|
+| Supabase | Free | 0đ |
+| Vercel | Hobby | 0đ |
+| GitHub | Free | 0đ |
+| Gmail SMTP | Free | 0đ |
+| **TỔNG** | | **0đ** ✅ |
+
+**Giới hạn miễn phí:**
+- Supabase: 50,000 users/tháng, 500MB database
+- Vercel: 100 deploys/ngày, 100GB bandwidth/tháng
+- Gmail: 500 emails/ngày
+
+---
+
+## ⚠️ BÀI HỌC KINH NGHIỆM
+
+### 1. Netlify đã đổi chính sách
+- Trước: Free không giới hạn deploy
+- Nay: 300 credits/tháng → dễ hết
+- **→ Vercel/Cloudflare tốt hơn cho dự án học tập**
+
+### 2. `.env` phải nằm trong `.gitignore`
+- Nếu không → key bị lộ lên GitHub
+- Luôn check trước khi push lần đầu
+
+### 3. Local dev rất quan trọng
+- Sửa code GitHub web chậm (1 phút/deploy)
+- Local: sửa xong Ctrl+S → thấy ngay
+- **→ Nên setup local từ đầu dự án**
+
+### 4. Rate limit email
+- Supabase free: 2 emails/giờ (khóa cứng)
+- **→ Setup Custom SMTP (Gmail) để tránh**
+
+### 5. Syntax giữa các nền tảng khác nhau
+- Netlify Functions: `exports.handler`
+- Cloudflare Functions: `export async function onRequest`
+- Vercel Functions: `module.exports` hoặc `export default`
+
+---
+
+## 🎯 BƯỚC TIẾP CÓ THỂ LÀM
+
+| # | Tính năng | Độ khó | Thời gian |
+|---|-----------|--------|-----------|
+| 1 | Trang Dashboard sau login | ⭐⭐ | 30 phút |
+| 2 | Đổi mật khẩu (khi đã login) | ⭐⭐ | 15 phút |
+| 3 | Upload avatar | ⭐⭐⭐ | 30 phút |
+| 4 | Đăng nhập bằng Google | ⭐⭐⭐ | 30 phút |
+| 5 | Trang profile | ⭐⭐ | 20 phút |
+| 6 | Dark mode | ⭐⭐ | 20 phút |
+| 7 | Đăng xuất | ⭐ | 10 phút |
+| 8 | Nhớ đăng nhập | ⭐⭐ | 15 phút |
+
+---
+
+## 📌 PHÍM TẮT HAY DÙNG
+
+### VS Code
+| Phím | Chức năng |
+|------|-----------|
+| `Ctrl + S` | Save + auto format |
+| `Ctrl + ~` | Mở Terminal |
+| `Ctrl + P` | Mở file nhanh |
+| `Ctrl + Shift + F` | Tìm trong dự án |
+| `Shift + Alt + F` | Format file |
+| `Ctrl + D` | Chọn từ tiếp theo |
+
+### CMD / Terminal
+| Lệnh | Chức năng |
+|------|-----------|
+| `vercel dev` | Chạy dev server |
+| `Ctrl + C` | Tắt server |
+| `dir` | Xem file trong folder |
+| `cd /d D:\...` | Chuyển ổ + folder |
+
+### Chrome DevTools
+| Phím | Chức năng |
+|------|-----------|
+| `F12` | Mở DevTools |
+| `Ctrl + Shift + R` | Hard refresh (xóa cache) |
+| `Ctrl + Shift + Delete` | Xóa cache |
+
+---
+
+## 📞 KHI CẦN DEBUG
+
+1. **Mở F12** → tab **Console** → xem lỗi đỏ
+2. **Mở CMD** chạy `vercel dev` → xem log server
+3. **Vercel Dashboard** → Deployments → xem build log
+4. **Supabase Dashboard** → Logs → xem auth log
+
+---
+
+## 🎉 THÀNH QUẢ CUỐI CÙNG
+
+Bạn đã có:
+- ✅ Web login hoàn chỉnh, chạy trên internet
+- ✅ Domain riêng miễn phí
+- ✅ HTTPS bảo mật
+- ✅ Xác thực email qua Gmail
+- ✅ Quên mật khẩu + reset
+- ✅ Workflow dev chuyên nghiệp
+
+**Link sản phẩm:** `https://van-hoc-lam-web.vercel.app`
+
+---
+
+Lưu file này lại để sau này tra cứu nha! Cần hỗ trợ gì cứ hỏi tui. Chúc mừng bạn đã hoàn thành sản phẩm đầu tiên! 🎉🚀
+
+
+Tui đang làm dự án web login với:
+- Frontend: HTML/CSS/JS trên Vercel
+- Backend: Supabase
+- Đã xong: login, signup, xác thực email, quên mật khẩu
+- Đang cần: làm trang dashboard sau login
+
+Giúp tui tiếp nha!
+
+GIAI ĐOẠN 1: NỀN TẢNG          ← Bắt đầu ngay
+├── DB: profiles, user_settings
+└── Code: Layout, Auth, Dashboard
+        ↓
+GIAI ĐOẠN 2: SẢN PHẨM + NCC
+├── DB: suppliers, products
+└── Code: Trang SP, NCC
+        ↓
+GIAI ĐOẠN 3: KHO
+├── DB: inventory_logs, purchase_orders
+└── Code: Nhập, Xuất, Lịch sử
+        ↓
+GIAI ĐOẠN 4: ĐƠN HÀNG
+├── DB: orders, order_items, customers
+└── Code: Đơn hàng, Báo cáo
+        ↓
+GIAI ĐOẠN 5: NHÂN SỰ + LƯƠNG
+├── DB: salaries, payroll, adjustments
+└── Code: Lương, Chấm công
+        ↓
+GIAI ĐOẠN 6: YÊU CẦU + DUYỆT
+├── DB: approvals, notifications
+└── Code: Yêu cầu, Duyệt
+        ↓
+GIAI ĐOẠN 7: CHAT + HOÀN THIỆN
+└── Chat, Notification, Báo cáo
