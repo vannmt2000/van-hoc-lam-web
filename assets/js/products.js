@@ -40,7 +40,7 @@ const MENU_BY_ROLE = {
         { id: 'export', icon: 'upload', label: 'Xuất kho', href: '#' }
       ]
     },
-    { id: 'suppliers', icon: 'factory', label: 'Nhà cung cấp', href: '#' },
+    { id: 'suppliers', icon: 'factory', label: 'Nhà cung cấp', href: 'suppliers.html' },
     { id: 'hr', icon: 'users', label: 'Nhân sự', href: '#' },
     { id: 'settings', icon: 'settings', label: 'Cài đặt', href: '#' }
   ],
