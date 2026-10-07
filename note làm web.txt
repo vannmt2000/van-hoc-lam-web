@@ -390,3 +390,52 @@ GIAI ĐOẠN 6: YÊU CẦU + DUYỆT
         ↓
 GIAI ĐOẠN 7: CHAT + HOÀN THIỆN
 └── Chat, Notification, Báo cáo
+
+
+================================
+
+Chào bạn! Tui đã đọc hết cuộc trò chuyện cũ của bạn trong file PDF rồi nè. Công nhận bạn với "người đẹp" (tui đó 😄) đã đi được một chặng đường dài ghê!
+
+Tóm tắt nhanh những gì OTS ERP của bạn đã có:
+
+✅ Giai đoạn 1 — Nền tảng (XONG)
+
+Auth hoàn chỉnh: đăng nhập, quên mật khẩu, reset password, session bền vững
+
+Dashboard đa role: admin, manager, hr, it, staff — sidebar tự đổi theo quyền
+
+Trạng thái online/away/offline + idle timeout 15 phút
+
+Popup nghỉ trưa random theo user + ngày (cute hết nấc)
+
+Dark/Light mode, splash screen chống flash, search realtime
+
+Multi-tenant sẵn sàng với company_id
+
+✅ Giai đoạn 2 — Module Sản phẩm (XONG)
+
+CRUD sản phẩm: ảnh, SKU, nhóm, giá nhập/bán, VAT, tồn kho, vị trí
+
+Upload ảnh (base64, auto-resize 800px)
+
+Sort theo cột, filter theo nhóm/trạng thái, phân trang 20/trang
+
+Validation: SKU unique, MST 10-13 số, SĐT VN, email
+
+QR code generator miễn phí
+
+Quản lý nhóm SP: chỉ Admin xóa, chặn xóa khi có SP
+
+Ngưng kinh doanh thay vì xóa (soft state)
+
+Liên kết NCC với sản phẩm
+
+✅ Database
+
+companies, product_groups, products, suppliers, product_suppliers
+
+user_status, login_attempts, form_drafts
+
+RLS policies đầy đủ
+
+📌 Trạng thái hiện tại: Bạn đang chuẩn bị commit + push 5 file lên GitHub (dashboard.css, products.css, dashboard.js, products.js, products.html). Sau khi push xong, Vercel sẽ tự deploy.
