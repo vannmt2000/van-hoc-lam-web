@@ -191,9 +191,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderSidebar();
     updateUserUI();
 
-    await Promise.all([loadSuppliers(), loadProducts()]);
-    renderStats();
-    renderSuppliers();
+// Load SP TRƯỚC để có data đếm
+await loadProducts();
+await loadSuppliers();
+recountProducts(); // Đếm lại cho chắc
+renderStats();
+renderSuppliers();
 
     initGlobalListeners();
     initSortableHeaders();
