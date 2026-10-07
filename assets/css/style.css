@@ -43,3 +43,173 @@ h2 { margin-bottom: 25px; color: #333; }
         line-height: 1.5;
     }
 }
+
+/* ============================================
+   SUBTITLE WELCOME — ĐẸP HƠN
+   ============================================ */
+.login-container .subtitle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 12px 0 20px;
+    white-space: nowrap;
+}
+
+/* Chữ gradient + shimmer */
+.subtitle-text {
+    background: linear-gradient(
+        90deg,
+        #667eea 0%,
+        #764ba2 25%,
+        #ec4899 50%,
+        #764ba2 75%,
+        #667eea 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: subtitleShimmer 4s linear infinite;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+@keyframes subtitleShimmer {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* Emoji mèo chính - nhún nhảy */
+.subtitle-emoji {
+    display: inline-block;
+    font-size: 20px;
+    animation: catBounce 1.5s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+@keyframes catBounce {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50%      { transform: translateY(-5px) rotate(5deg); }
+}
+
+/* Emoji bay lơ lửng xung quanh */
+.subtitle-float {
+    position: absolute;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    animation: floatAway 3s ease-in-out infinite;
+}
+
+.subtitle-float-1 { 
+    left: -20px; 
+    top: -8px; 
+    animation-delay: 0s;
+}
+.subtitle-float-2 { 
+    right: -18px; 
+    top: -6px; 
+    animation-delay: 1s;
+}
+.subtitle-float-3 { 
+    right: -25px; 
+    bottom: -8px; 
+    animation-delay: 2s;
+}
+
+@keyframes floatAway {
+    0%   { 
+        opacity: 0; 
+        transform: translateY(10px) scale(0.5); 
+    }
+    30%  { 
+        opacity: 1; 
+        transform: translateY(-5px) scale(1.1); 
+    }
+    70%  { 
+        opacity: 1; 
+        transform: translateY(-15px) scale(1); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateY(-25px) scale(0.8); 
+    }
+}
+
+/* Mobile nhỏ: bỏ emoji bay để không bị rối */
+@media (max-width: 420px) {
+    .subtitle-float {
+        display: none;
+    }
+    .subtitle-text {
+        font-size: 13px;
+    }
+    .login-container .subtitle {
+        white-space: normal;
+        flex-wrap: wrap;
+    }
+}
+
+/* ============================================
+   TRANG TRÍ LOGIN PAGE — VIBE CON SEN
+   ============================================ */
+
+/* 1. Nền gradient tím → hồng */
+body {
+    background: linear-gradient(
+        135deg, 
+        #c4d0ff 0%, 
+        #ddc4ff 25%, 
+        #ffc4dd 50%, 
+        #ddc4ff 75%, 
+        #c4d0ff 100%
+    );
+    background-size: 300% 300%;
+    animation: gradientShift 15s ease infinite;
+    min-height: 100vh;
+}
+
+@keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 2. Card login — hiệu ứng kính mờ */
+.login-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 
+        0 20px 60px rgba(102, 126, 234, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative; /* Cần cho emoji 🐾 định vị */
+    overflow: hidden;
+}
+
+/* 3. Emoji 🐾 ở góc card */
+.login-paw {
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.5;
+    pointer-events: none;
+    /* Đổi màu emoji thành hồng */
+    filter: sepia(1) hue-rotate(290deg) saturate(4) brightness(1.1);
+}
+
+.login-paw-left {
+    top: 12px;
+    left: 16px;
+    transform: rotate(-20deg);
+}
+
+.login-paw-right {
+    top: 12px;
+    right: 16px;
+    transform: rotate(20deg);
+}
