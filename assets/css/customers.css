@@ -1,0 +1,1142 @@
+/* ============================================
+   CUSTOMERS MODULE CSS
+   Kế thừa từ products.css + suppliers.css
+   ============================================ */
+
+/* ============================================
+   CUSTOMER TYPE SELECTOR (Chọn Cá nhân / DN)
+   ============================================ */
+.customer-type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.type-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.type-option:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+.type-option.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #eff6ff, #faf5ff);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+}
+
+.type-option.active::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #667eea;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.type-option .type-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.type-option .type-label {
+    font-weight: 800;
+    font-size: 14.5px;
+    color: #0f172a;
+}
+
+.type-option .type-desc {
+    font-size: 11.5px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.type-option.active .type-label {
+    color: #667eea;
+}
+
+body.dark-mode .type-option {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+body.dark-mode .type-option:hover {
+    background: #1e293b;
+}
+
+body.dark-mode .type-option.active {
+    background: linear-gradient(135deg, #1e3a8a, #4338ca);
+    border-color: #667eea;
+}
+
+body.dark-mode .type-option .type-label {
+    color: #f1f5f9;
+}
+
+body.dark-mode .type-option.active .type-label {
+    color: #a5b4fc;
+}
+
+/* ============================================
+   TABLE - CUSTOMER TYPE BADGE
+   ============================================ */
+.type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.type-badge.individual {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    color: #2563eb;
+}
+
+.type-badge.business {
+    background: linear-gradient(135deg, #faf5ff, #ede9fe);
+    color: #7c3aed;
+}
+
+body.dark-mode .type-badge.individual {
+    background: #1e3a8a;
+    color: #93c5fd;
+}
+
+body.dark-mode .type-badge.business {
+    background: #4c1d95;
+    color: #c4b5fd;
+}
+
+/* ============================================
+   CUSTOMER NAME / INFO
+   ============================================ */
+.customer-name {
+    font-weight: 700;
+    color: #0f172a;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.customer-sub {
+    font-size: 11.5px;
+    color: #94a3b8;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+body.dark-mode .customer-name {
+    color: #f1f5f9;
+}
+
+body.dark-mode .customer-sub {
+    color: #64748b;
+}
+
+/* ============================================
+   CUSTOMER CODE
+   ============================================ */
+.customer-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    color: #667eea;
+    font-size: 13px;
+}
+
+.customer-code.business {
+    color: #8b5cf6;
+}
+
+/* ============================================
+   TIER BADGE (Mới / Thường / VIP)
+   ============================================ */
+.tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tier-badge.new {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.tier-badge.regular {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.tier-badge.vip {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+}
+
+body.dark-mode .tier-badge.new {
+    background: #1e3a8a;
+    color: #93c5fd;
+}
+
+body.dark-mode .tier-badge.regular {
+    background: #334155;
+    color: #cbd5e1;
+}
+
+body.dark-mode .tier-badge.vip {
+    background: linear-gradient(135deg, #78350f, #92400e);
+    color: #fde68a;
+}
+
+/* ============================================
+   SOURCE BADGE (Nguồn KH)
+   ============================================ */
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+body.dark-mode .source-badge {
+    background: #1e293b;
+    color: #cbd5e1;
+    border-color: #334155;
+}
+
+/* ============================================
+   STATUS BADGE (Đang hoạt động / Ngưng)
+   ============================================ */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-badge.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.inactive {
+    background: #f1f5f9;
+    color: #64748b;
+    opacity: 0.8;
+}
+
+.status-badge.active::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    animation: pulseDot 2s ease-in-out infinite;
+}
+
+.status-badge.inactive::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #94a3b8;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+body.dark-mode .status-badge.active {
+    background: #14532d;
+    color: #bbf7d0;
+}
+
+body.dark-mode .status-badge.inactive {
+    background: #334155;
+    color: #94a3b8;
+}
+
+/* ============================================
+   DETAIL MODAL — TABS
+   ============================================ */
+.detail-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 22px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fafbfc;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.detail-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.detail-tab {
+    padding: 14px 18px;
+    border: none;
+    background: transparent;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+    top: 1px;
+}
+
+.detail-tab:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.detail-tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+.detail-tab svg {
+    width: 15px;
+    height: 15px;
+}
+
+body.dark-mode .detail-tabs {
+    background: #0f172a;
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .detail-tab {
+    color: #94a3b8;
+}
+
+body.dark-mode .detail-tab.active {
+    color: #a5b4fc;
+    border-bottom-color: #a5b4fc;
+}
+
+body.dark-mode .detail-tab:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* ============================================
+   DETAIL HEADER (trong modal chi tiết)
+   ============================================ */
+.customer-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f0f4ff, #faf5ff);
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.customer-detail-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    border: 2px solid #e2e8f0;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.customer-detail-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.customer-detail-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.customer-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: #64748b;
+}
+
+body.dark-mode .customer-detail-header {
+    background: linear-gradient(135deg, #1e293b, #334155);
+}
+
+body.dark-mode .customer-detail-avatar {
+    background: #0f172a;
+    border-color: #475569;
+}
+
+body.dark-mode .customer-detail-name {
+    color: #f1f5f9;
+}
+
+body.dark-mode .customer-detail-meta {
+    color: #94a3b8;
+}
+
+/* ============================================
+   LINK BOX (Liên kết DN ↔ Cá nhân)
+   ============================================ */
+.link-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    margin-top: 12px;
+}
+
+.link-box-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.link-box-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.link-box-title {
+    font-weight: 800;
+    font-size: 13.5px;
+    color: #075985;
+    margin-bottom: 2px;
+}
+
+.link-box-desc {
+    font-size: 12px;
+    color: #0c4a6e;
+}
+
+.link-box-btn {
+    padding: 8px 14px;
+    background: #0ea5e9;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: all 0.15s;
+}
+
+.link-box-btn:hover {
+    background: #0284c7;
+    transform: translateY(-1px);
+}
+
+body.dark-mode .link-box {
+    background: #0c4a6e;
+    border-color: #075985;
+}
+
+body.dark-mode .link-box-title {
+    color: #bae6fd;
+}
+
+body.dark-mode .link-box-desc {
+    color: #7dd3fc;
+}
+
+/* ============================================
+   EMPTY STATE TABS
+   ============================================ */
+.empty-tab {
+    padding: 60px 20px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.empty-tab-icon {
+    font-size: 64px;
+    opacity: 0.4;
+    margin-bottom: 16px;
+    line-height: 1;
+}
+
+.empty-tab-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.empty-tab-desc {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   ACTIVITY TIMELINE
+   ============================================ */
+.timeline {
+    position: relative;
+    padding-left: 28px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -27px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #667eea;
+    box-shadow: 0 0 0 3px #eff6ff;
+}
+
+.timeline-item.warning::before {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px #fef3c7;
+}
+
+.timeline-item.success::before {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px #dcfce7;
+}
+
+.timeline-time {
+    font-size: 11.5px;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.timeline-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+}
+
+.timeline-desc {
+    font-size: 12.5px;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+body.dark-mode .timeline::before {
+    background: #334155;
+}
+
+body.dark-mode .timeline-item::before {
+    background: #0f172a;
+    border-color: #a5b4fc;
+    box-shadow: 0 0 0 3px #1e3a8a;
+}
+
+body.dark-mode .timeline-title {
+    color: #f1f5f9;
+}
+
+body.dark-mode .timeline-desc {
+    color: #94a3b8;
+}
+
+/* ============================================
+   STATS GRID (trong chi tiết)
+   ============================================ */
+.detail-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 16px;
+}
+
+.detail-stat {
+    text-align: center;
+}
+
+.detail-stat-label {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+}
+
+.detail-stat-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.detail-stat-value.success {
+    color: #10b981;
+}
+
+.detail-stat-value.warning {
+    color: #f59e0b;
+}
+
+body.dark-mode .detail-stats {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+body.dark-mode .detail-stat-value {
+    color: #f1f5f9;
+}
+
+/* ============================================
+   COMBOBOX (Người đại diện) — dùng chung style
+   ============================================ */
+.combobox-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.combobox-wrap input {
+    width: 100%;
+    padding-right: 40px !important;
+}
+
+.combobox-toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.combobox-toggle:hover {
+    background: #f1f5f9;
+    color: #667eea;
+}
+
+.combobox-toggle svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s;
+}
+
+.combobox-toggle.open svg {
+    transform: rotate(180deg);
+}
+
+.combobox-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 9999;
+    display: none;
+    padding: 6px;
+}
+
+.combobox-dropdown.show {
+    display: block;
+    animation: comboboxFadeIn 0.15s ease;
+}
+
+@keyframes comboboxFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.combobox-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    color: #334155;
+    transition: all 0.15s;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.combobox-item:hover {
+    background: #eff6ff;
+    color: #667eea;
+}
+
+.combobox-item.selected {
+    background: #e0e7ff;
+    color: #4338ca;
+    font-weight: 700;
+}
+
+.combobox-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.combobox-item-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: #0f172a;
+    display: block;
+}
+
+.combobox-item-desc {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.combobox-empty {
+    padding: 14px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 12.5px;
+    font-style: italic;
+}
+
+.combobox-hint {
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #94a3b8;
+    border-top: 1px dashed #e2e8f0;
+    margin-top: 4px;
+}
+
+body.dark-mode .combobox-dropdown {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.dark-mode .combobox-item {
+    color: #cbd5e1;
+}
+
+body.dark-mode .combobox-item:hover {
+    background: #334155;
+    color: #a5b4fc;
+}
+
+body.dark-mode .combobox-item.selected {
+    background: #4338ca;
+    color: #e0e7ff;
+}
+
+body.dark-mode .combobox-item-name {
+    color: #f1f5f9;
+}
+
+body.dark-mode .combobox-toggle:hover {
+    background: #334155;
+}
+
+/* ============================================
+   INFO ROW (dùng trong tab info)
+   ============================================ */
+.info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #f1f5f9;
+    font-size: 13.5px;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.info-row-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.info-row-label {
+    font-size: 11.5px;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+
+.info-row-value {
+    font-size: 13.5px;
+    color: #0f172a;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+body.dark-mode .info-row {
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .info-row-icon {
+    background: #334155;
+}
+
+body.dark-mode .info-row-value {
+    color: #f1f5f9;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .customer-type-selector {
+        grid-template-columns: 1fr;
+    }
+
+    .type-option {
+        flex-direction: row;
+        text-align: left;
+        padding: 14px;
+    }
+
+    .type-option .type-icon {
+        font-size: 28px;
+    }
+
+    .detail-tabs {
+        padding: 0 12px;
+    }
+
+    .detail-tab {
+        padding: 12px 12px;
+        font-size: 12.5px;
+    }
+
+    .detail-tab span {
+        display: none;
+    }
+
+    .customer-detail-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .customer-detail-name {
+        font-size: 17px;
+    }
+
+    .detail-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .link-box {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* ============================================
+   REP MODE TOGGLE (Chọn KH sẵn / Nhập tay)
+   ============================================ */
+.rep-mode-toggle {
+    display: flex;
+    gap: 8px;
+    padding: 4px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.rep-mode-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s;
+}
+
+.rep-mode-btn:hover {
+    color: #667eea;
+}
+
+.rep-mode-btn.active {
+    background: #fff;
+    color: #667eea;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.rep-mode-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+body.dark-mode .rep-mode-toggle {
+    background: #0f172a;
+}
+
+body.dark-mode .rep-mode-btn.active {
+    background: #1e293b;
+    color: #a5b4fc;
+}
+
+/* ============================================
+   FIX BẢNG KH — CỘT ĐỀU, KHÔNG LỆCH
+   ============================================ */
+.customers-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.customers-table th,
+.customers-table td {
+    vertical-align: middle;
+    padding: 14px 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Cột Loại — căn giữa */
+.customers-table th:nth-child(1),
+.customers-table td:nth-child(1) {
+    text-align: center;
+}
+
+/* Cột Mã */
+.customers-table th:nth-child(2),
+.customers-table td:nth-child(2) {
+    white-space: nowrap;
+}
+
+/* Cột Họ tên */
+.customers-table th:nth-child(3),
+.customers-table td:nth-child(3) {
+    min-width: 0;
+}
+
+/* Cột Doanh nghiệp */
+.customers-table th:nth-child(4),
+.customers-table td:nth-child(4) {
+    min-width: 0;
+}
+
+/* Cột SĐT — monospace cho đẹp */
+.customers-table td:nth-child(5) {
+    font-family: 'Courier New', monospace;
+    font-size: 12.5px;
+}
+
+/* Cột Nguồn */
+.customers-table th:nth-child(6),
+.customers-table td:nth-child(6) {
+    white-space: nowrap;
+}
+
+/* Cột Phân loại — căn giữa */
+.customers-table th:nth-child(7),
+.customers-table td:nth-child(7) {
+    text-align: center;
+}
+
+/* Cột Trạng thái — căn giữa */
+.customers-table th:nth-child(8),
+.customers-table td:nth-child(8) {
+    text-align: center;
+}
+
+/* Cột Thao tác — căn giữa */
+.customers-table th:nth-child(9),
+.customers-table td:nth-child(9) {
+    text-align: center;
+}
+
+/* Cải thiện customer-name và customer-sub */
+.customers-table .customer-name {
+    display: block;
+    font-weight: 700;
+    font-size: 13px;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.customers-table .customer-sub {
+    display: block;
+    font-size: 11.5px;
+    color: #94a3b8;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.dark-mode .customers-table .customer-name {
+    color: #f1f5f9;
+}
+
+
+/* ============================================ */
+/* MODAL DETAIL - CỐ ĐỊNH SIZE */
+/* ============================================ */
+
+#modal-detail .modal-content {
+    min-height: 620px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#modal-detail .modal-header {
+    flex-shrink: 0;
+}
+
+#modal-detail .detail-tabs {
+    flex-shrink: 0;
+}
+
+#modal-detail #detail-content,
+#modal-detail .detail-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Scrollbar đẹp cho detail content */
+#modal-detail #detail-content::-webkit-scrollbar,
+#modal-detail .detail-content::-webkit-scrollbar {
+    width: 8px;
+}
+#modal-detail #detail-content::-webkit-scrollbar-thumb,
+#modal-detail .detail-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+#modal-detail #detail-content::-webkit-scrollbar-thumb:hover,
+#modal-detail .detail-content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Dark mode support */
+body.dark-mode #modal-detail .modal-content {
+    background: #1e293b;
+    color: #e2e8f0;
+}

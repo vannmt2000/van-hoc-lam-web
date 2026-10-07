@@ -1,441 +1,157 @@
-Được! Tui tổng hợp lại **toàn bộ hành trình** hôm nay cho bạn. Lưu lại để sau này cần tra cứu hoặc viết báo cáo đồ án nha.
+===== PROMPT TÓM TẮT DỰ ÁN ERP "CÔNG TY TNHH MỘT CON SEN" =====
+(Cập nhật: 07/10/2026)
 
----
+## BỐI CẢNH
+- Web ERP quản lý doanh nghiệp (demo đồ án)
+- User không chuyên code, cần hướng dẫn từng bước
+- Muốn nhận FULL FILE để paste, KHÔNG "tìm dòng X thay Y"
+- Ngôn ngữ: Tiếng Việt, thân thiện, emoji
 
-# 📘 TỔNG KẾT DỰ ÁN WEB LOGIN
+## TECH STACK
+- Frontend: HTML/CSS/JS thuần
+- Backend: Vercel Serverless (/api/*.js)
+- DB + Auth: Supabase (PostgreSQL)
+- Deploy: Vercel
+- Icons: Lucide
+- Local: vercel dev → http://localhost:3000
+- Prod: https://van-hoc-lam-web.vercel.app
 
-## 🎯 MỤC TIÊU
-Xây dựng trang web login/đăng ký có xác thực email, quên mật khẩu, chạy trên internet cho người ngoài truy cập được — **100% miễn phí**.
+## THÔNG TIN QUAN TRỌNG
+- Supabase URL: https://pffbnfysvhiumzhfvnos.supabase.co
+- Auth: Supabase Auth (login/logout/forgot password qua Gmail SMTP)
+- Storage key: ots-erp-auth
+- Company ID mặc định: 00000000-0000-0000-0000-000000000001
 
----
+## DATABASE ĐÃ CÓ
+auth.users, companies, profiles, user_settings, user_status, login_attempts, form_drafts,
+product_groups, products, suppliers, product_suppliers (chưa dùng),
+customers (MỚI), customer_logs (MỚI)
 
-## 🏗️ KIẾN TRÚC TỔNG THỂ
+Chi tiết schema: xem file DB_SCHEMA.md (nếu cần, yêu cầu user paste lại)
 
-```
-[User Browser]
-     ↓ HTTPS
-[Frontend: HTML/CSS/JS] ← Host trên Vercel
-     ↓ Fetch API
-[Serverless Functions] ← Chạy trên Vercel (/api/*)
-     ↓ HTTPS
-[Backend: Supabase] ← Database + Auth
-     ↓ SMTP
-[Gmail SMTP] ← Gửi email xác nhận
-```
-
----
-
-## 🛠️ CÔNG CỤ ĐÃ DÙNG
-
-### 1. Database + Backend
-
-| Thành phần | Dịch vụ | Gói | Vai trò |
-|-----------|---------|-----|---------|
-| **Database** | Supabase (PostgreSQL) | Free | Lưu user, session |
-| **Authentication** | Supabase Auth | Free | Đăng nhập, xác thực email |
-| **Email SMTP** | Gmail | Free | Gửi mail xác nhận/reset |
-
-**Thông tin Supabase project:**
-- **Tên:** `van-hoc-lam-web`
-- **URL:** `https://pffbnfysvhiumzhfvnos.supabase.co`
-- **Region:** Asia-Pacific (Singapore)
-- **Plan:** Free
-
-### 2. Hosting
-
-| Thành phần | Dịch vụ | Vai trò |
-|-----------|---------|---------|
-| **Frontend + Functions** | Vercel | Host web + API |
-| **Domain** | `van-hoc-lam-web.vercel.app` | Domain miễn phí |
-| **SSL/HTTPS** | Vercel (tự động) | Bảo mật |
-
-**Link production:** `https://van-hoc-lam-web.vercel.app`
-
-### 3. Quản lý code
-
-| Thành phần | Dịch vụ | Vai trò |
-|-----------|---------|---------|
-| **Source code** | GitHub | Lưu code (repo: `vannt2000/van-hoc-lam-web`) |
-| **Git client** | GitHub Desktop | Commit + push dễ dàng |
-
----
-
-## 💻 CÀI ĐẶT MÁY LOCAL
-
-### Công cụ cần cài
-
-| # | Công cụ | Version | Chức năng |
-|---|---------|---------|-----------|
-| 1 | **Git** | 2.49.0 | Quản lý version code |
-| 2 | **Node.js** | v22.15.0 (LTS) | Chạy npm, Vercel CLI |
-| 3 | **npm** | 10.9.2 | Cài package |
-| 4 | **Vercel CLI** | 62.2.0 | Chạy dev server local |
-| 5 | **VS Code** | (mới nhất) | Viết code |
-| 6 | **GitHub Desktop** | (mới nhất) | Commit/push code |
-
-### Extension VS Code đã cài
-
-- **Prettier** — Format code tự động
-- **Live Server** — Chạy HTML tĩnh (không dùng cho project này)
-- **Vietnamese Language Pack** — Giao diện tiếng Việt
-
----
-
-## 📁 CẤU TRÚC THƯ MỤC DỰ ÁN
-
-```
+## CẤU TRÚC FILE
 van-hoc-lam-web/
-│
-├── .env                    ← Biến môi trường LOCAL (không push)
-├── .env.local              ← Biến môi trường Vercel pull về (không push)
-├── .gitignore              ← Chặn .env* khỏi GitHub
-│
-├── api/                    ← Vercel Serverless Functions
-│   ├── login.js            ← API đăng nhập
-│   ├── signup.js           ← API đăng ký
-│   ├── forgot-password.js  ← API quên mật khẩu
-│   ├── reset-password.js   ← API đặt lại mật khẩu
-│   └── check-confirm.js    ← API check email confirm (cũ)
-│
+├── api/ (login.js, forgot-password.js, reset-password.js)
 ├── assets/
-│   ├── css/
-│   │   └── style.css       ← CSS dùng chung
+│   ├── css/ (style, layout, dashboard, products, suppliers, customers)
 │   └── js/
-│       ├── config.js       ← Config chung
-│       ├── login.js        ← Logic login
-│       ├── signup.js       ← Logic signup
-│       └── reset-password.js ← Logic reset pass
-│
-├── pages/
-│   ├── login.html          ← Trang đăng nhập
-│   ├── signup.html         ← Trang đăng ký
-│   └── reset-password.html ← Trang đặt lại mật khẩu
-│
-├── index.html              ← Redirect về pages/login.html
-├── package.json            ← Dependencies
-└── README.md
-```
-
----
-
-## 🔑 BIẾN MÔI TRƯỜNG (Environment Variables)
-
-### Trên Vercel (Settings → Environment Variables)
-
-| Key | Value |
-|-----|-------|
-| `SUPABASE_URL` | `https://pffbnfysvhiumzhfvnos.supabase.co` |
-| `SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIs...` |
-
-### Trên máy local (file `.env`)
-
-Giống hệt Vercel — Vercel CLI tự pull về khi chạy `vercel env pull`.
-
-**File `.env` nội dung:**
-```
-SUPABASE_URL=https://pffbnfysvhiumzhfvnos.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
-```
-
-> ⚠️ **KHÔNG BAO GIỜ** commit `.env` lên GitHub. `.gitignore` đã chặn.
-
----
-
-## ⚙️ CẤU HÌNH SUPABASE
-
-### Authentication
-
-| Setting | Giá trị |
-|---------|---------|
-| **Email Provider** | ✅ Enabled |
-| **Confirm email** | ✅ ON (yêu cầu xác nhận) |
-| **Minimum password length** | 6 |
-
-### URL Configuration
-
-| Trường | Giá trị |
-|--------|---------|
-| **Site URL** | `http://localhost:3000` (dev) hoặc `https://van-hoc-lam-web.vercel.app` (prod) |
-| **Redirect URLs** | `http://localhost:3000/**`<br>`https://van-hoc-lam-web.vercel.app/**` |
-
-### SMTP Settings (Custom Email)
-
-| Trường | Giá trị |
-|--------|---------|
-| **Host** | `smtp.gmail.com` |
-| **Port** | `465` |
-| **Username** | `vanlibra1409@gmail.com` |
-| **Password** | App Password (16 ký tự) |
-| **Sender name** | `Vân Học Làm Web` |
-
----
-
-## 🔄 QUY TRÌNH LÀM VIỆC HÀNG NGÀY
-
-### 1. Chạy dev server
-
-```bash
-cd D:\Download\Self-Learning\van-hoc-lam-web
-vercel dev
-```
-
-→ Mở `http://localhost:3000/pages/login.html`
-
-### 2. Sửa code trong VS Code
-
-- Sửa `.js`, `.html`, `.css` → Vercel dev tự reload
-- Sửa `api/*.js` → phải **Ctrl + C** rồi chạy lại `vercel dev`
-
-### 3. Test local
-
-Ctrl + Shift + R để hard refresh trình duyệt.
-
-### 4. Push lên production
-
-- **GitHub Desktop** → Commit → Push
-- **Vercel** tự động deploy trong ~1 phút
-
----
-
-## 🚀 CÁC TÍNH NĂNG ĐÃ HOÀN THÀNH
-
-| # | Tính năng | Trạng thái |
-|---|-----------|-----------|
-| 1 | Đăng nhập (email/password) | ✅ |
-| 2 | Đăng ký với xác thực email | ✅ |
-| 3 | Gửi lại email xác nhận | ✅ |
-| 4 | Quên mật khẩu → gửi link reset | ✅ |
-| 5 | Đặt lại mật khẩu qua link | ✅ |
-| 6 | Auto-fill email từ URL | ✅ |
-| 7 | Deploy production | ✅ |
-| 8 | Chạy local với Vercel CLI | ✅ |
-
----
-
-## 🎓 KIẾN THỨC ĐÃ HỌC
-
-### Về Frontend
-- HTML form + validation
-- Fetch API gọi backend
-- LocalStorage lưu token
-- Query params, hash params
-- Xử lý loading/error state
-
-### Về Backend
-- Serverless Functions (Vercel)
-- REST API design
-- Environment Variables
-- SMTP email sending
-- Supabase Auth API
-
-### Về Bảo mật
-- `anon key` vs `service_role key`
-- Row Level Security (RLS)
-- User Enumeration Attack
-- OWASP best practices
-
-### Về DevTools
-- Git + GitHub
-- Vercel CLI
-- VS Code shortcuts
-- Chrome DevTools (Console, Network)
-
----
-
-## 💰 CHI PHÍ
-
-| Dịch vụ | Gói | Chi phí |
-|---------|-----|---------|
-| Supabase | Free | 0đ |
-| Vercel | Hobby | 0đ |
-| GitHub | Free | 0đ |
-| Gmail SMTP | Free | 0đ |
-| **TỔNG** | | **0đ** ✅ |
-
-**Giới hạn miễn phí:**
-- Supabase: 50,000 users/tháng, 500MB database
-- Vercel: 100 deploys/ngày, 100GB bandwidth/tháng
-- Gmail: 500 emails/ngày
-
----
-
-## ⚠️ BÀI HỌC KINH NGHIỆM
-
-### 1. Netlify đã đổi chính sách
-- Trước: Free không giới hạn deploy
-- Nay: 300 credits/tháng → dễ hết
-- **→ Vercel/Cloudflare tốt hơn cho dự án học tập**
-
-### 2. `.env` phải nằm trong `.gitignore`
-- Nếu không → key bị lộ lên GitHub
-- Luôn check trước khi push lần đầu
-
-### 3. Local dev rất quan trọng
-- Sửa code GitHub web chậm (1 phút/deploy)
-- Local: sửa xong Ctrl+S → thấy ngay
-- **→ Nên setup local từ đầu dự án**
-
-### 4. Rate limit email
-- Supabase free: 2 emails/giờ (khóa cứng)
-- **→ Setup Custom SMTP (Gmail) để tránh**
-
-### 5. Syntax giữa các nền tảng khác nhau
-- Netlify Functions: `exports.handler`
-- Cloudflare Functions: `export async function onRequest`
-- Vercel Functions: `module.exports` hoặc `export default`
-
----
-
-## 🎯 BƯỚC TIẾP CÓ THỂ LÀM
-
-| # | Tính năng | Độ khó | Thời gian |
-|---|-----------|--------|-----------|
-| 1 | Trang Dashboard sau login | ⭐⭐ | 30 phút |
-| 2 | Đổi mật khẩu (khi đã login) | ⭐⭐ | 15 phút |
-| 3 | Upload avatar | ⭐⭐⭐ | 30 phút |
-| 4 | Đăng nhập bằng Google | ⭐⭐⭐ | 30 phút |
-| 5 | Trang profile | ⭐⭐ | 20 phút |
-| 6 | Dark mode | ⭐⭐ | 20 phút |
-| 7 | Đăng xuất | ⭐ | 10 phút |
-| 8 | Nhớ đăng nhập | ⭐⭐ | 15 phút |
-
----
-
-## 📌 PHÍM TẮT HAY DÙNG
-
-### VS Code
-| Phím | Chức năng |
-|------|-----------|
-| `Ctrl + S` | Save + auto format |
-| `Ctrl + ~` | Mở Terminal |
-| `Ctrl + P` | Mở file nhanh |
-| `Ctrl + Shift + F` | Tìm trong dự án |
-| `Shift + Alt + F` | Format file |
-| `Ctrl + D` | Chọn từ tiếp theo |
-
-### CMD / Terminal
-| Lệnh | Chức năng |
-|------|-----------|
-| `vercel dev` | Chạy dev server |
-| `Ctrl + C` | Tắt server |
-| `dir` | Xem file trong folder |
-| `cd /d D:\...` | Chuyển ổ + folder |
-
-### Chrome DevTools
-| Phím | Chức năng |
-|------|-----------|
-| `F12` | Mở DevTools |
-| `Ctrl + Shift + R` | Hard refresh (xóa cache) |
-| `Ctrl + Shift + Delete` | Xóa cache |
-
----
-
-## 📞 KHI CẦN DEBUG
-
-1. **Mở F12** → tab **Console** → xem lỗi đỏ
-2. **Mở CMD** chạy `vercel dev` → xem log server
-3. **Vercel Dashboard** → Deployments → xem build log
-4. **Supabase Dashboard** → Logs → xem auth log
-
----
-
-## 🎉 THÀNH QUẢ CUỐI CÙNG
-
-Bạn đã có:
-- ✅ Web login hoàn chỉnh, chạy trên internet
-- ✅ Domain riêng miễn phí
-- ✅ HTTPS bảo mật
-- ✅ Xác thực email qua Gmail
-- ✅ Quên mật khẩu + reset
-- ✅ Workflow dev chuyên nghiệp
-
-**Link sản phẩm:** `https://van-hoc-lam-web.vercel.app`
-
----
-
-Lưu file này lại để sau này tra cứu nha! Cần hỗ trợ gì cứ hỏi tui. Chúc mừng bạn đã hoàn thành sản phẩm đầu tiên! 🎉🚀
-
-
-Tui đang làm dự án web login với:
-- Frontend: HTML/CSS/JS trên Vercel
-- Backend: Supabase
-- Đã xong: login, signup, xác thực email, quên mật khẩu
-- Đang cần: làm trang dashboard sau login
-
-Giúp tui tiếp nha!
-
-GIAI ĐOẠN 1: NỀN TẢNG          ← Bắt đầu ngay
-├── DB: profiles, user_settings
-└── Code: Layout, Auth, Dashboard
-        ↓
-GIAI ĐOẠN 2: SẢN PHẨM + NCC
-├── DB: suppliers, products
-└── Code: Trang SP, NCC
-        ↓
-GIAI ĐOẠN 3: KHO
-├── DB: inventory_logs, purchase_orders
-└── Code: Nhập, Xuất, Lịch sử
-        ↓
-GIAI ĐOẠN 4: ĐƠN HÀNG
-├── DB: orders, order_items, customers
-└── Code: Đơn hàng, Báo cáo
-        ↓
-GIAI ĐOẠN 5: NHÂN SỰ + LƯƠNG
-├── DB: salaries, payroll, adjustments
-└── Code: Lương, Chấm công
-        ↓
-GIAI ĐOẠN 6: YÊU CẦU + DUYỆT
-├── DB: approvals, notifications
-└── Code: Yêu cầu, Duyệt
-        ↓
-GIAI ĐOẠN 7: CHAT + HOÀN THIỆN
-└── Chat, Notification, Báo cáo
-
-
-================================
-
-Chào bạn! Tui đã đọc hết cuộc trò chuyện cũ của bạn trong file PDF rồi nè. Công nhận bạn với "người đẹp" (tui đó 😄) đã đi được một chặng đường dài ghê!
-
-Tóm tắt nhanh những gì OTS ERP của bạn đã có:
-
-✅ Giai đoạn 1 — Nền tảng (XONG)
-
-Auth hoàn chỉnh: đăng nhập, quên mật khẩu, reset password, session bền vững
-
-Dashboard đa role: admin, manager, hr, it, staff — sidebar tự đổi theo quyền
-
-Trạng thái online/away/offline + idle timeout 15 phút
-
-Popup nghỉ trưa random theo user + ngày (cute hết nấc)
-
-Dark/Light mode, splash screen chống flash, search realtime
-
-Multi-tenant sẵn sàng với company_id
-
-✅ Giai đoạn 2 — Module Sản phẩm (XONG)
-
-CRUD sản phẩm: ảnh, SKU, nhóm, giá nhập/bán, VAT, tồn kho, vị trí
-
-Upload ảnh (base64, auto-resize 800px)
-
-Sort theo cột, filter theo nhóm/trạng thái, phân trang 20/trang
-
-Validation: SKU unique, MST 10-13 số, SĐT VN, email
-
-QR code generator miễn phí
-
-Quản lý nhóm SP: chỉ Admin xóa, chặn xóa khi có SP
-
-Ngưng kinh doanh thay vì xóa (soft state)
-
-Liên kết NCC với sản phẩm
-
-✅ Database
-
-companies, product_groups, products, suppliers, product_suppliers
-
-user_status, login_attempts, form_drafts
-
-RLS policies đầy đủ
-
-📌 Trạng thái hiện tại: Bạn đang chuẩn bị commit + push 5 file lên GitHub (dashboard.css, products.css, dashboard.js, products.js, products.html). Sau khi push xong, Vercel sẽ tự deploy.
+│       ├── config.js         (Supabase client + USER_CREATE_CONFIG)
+│       ├── layout.js         (session, sidebar, header, theme, toast, status, idle, lunch, search)
+│       ├── login.js, signup.js, reset-password.js
+│       ├── dashboard.js, products.js, suppliers.js, customers.js
+├── pages/ (login, signup, reset-password, dashboard, products, suppliers, customers)
+├── index.html, package.json, vercel.json
+
+## ✅ ĐÃ HOÀN THÀNH
+
+### 1. Auth (100%)
+- Login/logout, forgot/reset password qua Gmail SMTP
+- Session dùng setSession() với access + refresh token
+- config.js có window.supabaseClient
+
+### 2. Layout chung (100%) — ĐÃ TÁCH XONG
+layout.js chứa:
+- Session (waitForSession, loadProfile, loadCompany)
+- Sidebar (renderSidebar, toggleSubmenu, navigateTo, toggleSidebar, loadSidebarState)
+- User UI, theme toggle, notification dropdown
+- Toast helper (showToast)
+- Helpers (escapeHtml, formatDate, formatMoney, formatNumber, formatTimeAgo)
+- Validation helpers (setFieldError, clearFormErrors, attachRealtimeValidation)
+- Role helpers (isAdmin, canEdit)
+- Status updater (initStatusUpdater, updateStatusToServer, updateStatusDot)
+- Idle timeout 15p (initIdleTimer, showSessionExpired, relogin)
+- Lunch popup 12h (initLunchPopup, showLunchPopup)
+- Search Ctrl+K (initSearchShortcut, handleSearchInput)
+- Logout confirm (confirmLogout, closeLogoutConfirm, doLogout)
+- initLayout() — gọi trong mỗi trang
+
+4 file page (dashboard.js, products.js, suppliers.js, customers.js) ĐÃ XÓA HẾT hàm trùng. Pattern chuẩn:
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        const ok = await initLayout();
+        if (!ok) return;
+        // ... phần riêng
+        // ẩn splash
+    });
+
+### 3. Dashboard (95%)
+- Sidebar theo role, welcome + clock realtime
+- 4 KPI cards: Nhân sự (3), Tồn kho (7 SP - 132 trong kho - 3 sắp hết), Doanh thu/Đơn hàng để "—" (chưa làm module)
+- Customize panel DRAG-DROP ĐÃ FIX: save/load OK, ẩn/hiện OK, SORT THỨ TỰ OK
+- Top NCC widget mới (top 3 có SP)
+- Popup nghỉ trưa 12h (random theo user+ngày)
+- Splash screen, theme toggle, notification dropdown (chưa data)
+- Status online/away/offline, idle timeout 15p, search Ctrl+K
+
+### 4. Sản phẩm (100%) — VỪA THÊM AUTO-GEN SKU
+- CRUD + upload ảnh base64 (resize 800px)
+- Sort all cột, filter nhóm/trạng thái, search realtime, pagination 20
+- Form 4 sections: Thông tin, Giá, Kho, NCC
+- Validation SKU unique, MST, SĐT, email
+- QR code (api.qrserver.com)
+- Ngưng kinh doanh (soft delete is_active)
+- Quản lý nhóm SP (Admin mới xóa được)
+- **Auto-gen SKU: nếu để trống SKU → sinh SP-001, SP-002... (query DB tìm max)**
+
+### 5. Nhà cung cấp (85%)
+- CRUD NCC, sort mã/tên/MST/số SP
+- Combo box ngân hàng (custom dropdown, logo từ VietQR)
+- Rating 5 sao, checkbox "có xuất hóa đơn"
+- Auto-sinh mã NCC-XXX
+- Modal chi tiết có danh sách SP liên kết
+
+### 6. Khách hàng (85%)
+- CRUD KH cá nhân + doanh nghiệp (toggle loại từ đầu)
+- Sort mã/tên/SĐT/tier, filter type/tier
+- Modal chi tiết 4 tabs (Thông tin, Đơn hàng, Bảo hành, Hoạt động)
+- Modal detail CỐ ĐỊNH SIZE (CSS min-height 620px) — không nhảy khi đổi tab
+- Người đại diện: chọn KH có sẵn HOẶC nhập tay
+- Check trùng SĐT (cá nhân) → confirm modal
+- Auto-sinh mã KH-XXX / DN-XXX
+- Label đầy đủ KHÔNG viết tắt: "Số điện thoại", "Phương thức thanh toán ưu tiên", "Điều khoản thanh toán", "Nguồn khách hàng" + có hint chú thích nhỏ
+- SĐT in đậm monospace
+
+## 🚧 VIỆC CẦN LÀM TIẾP
+
+### Ưu tiên 1: Commit + Push code hiện tại lên git
+
+### Ưu tiên 2 (module mới):
+- Module Kho (nhập/xuất/tồn) → nối KPI Tồn kho
+- Module Đơn hàng → nối KPI Doanh thu + Đơn hàng, tab Orders trong Customer detail
+- Module HR (nhân viên, chấm công, lương)
+- Module Bảo hành (sau khi có đơn hàng)
+
+### Dọn dẹp HTML cần làm:
+- pages/customers.html: đổi header table "SĐT" → "Số điện thoại"
+- pages/dashboard.html: xóa 2 item không có widget thật trong panel customize
+  (revenue-chart + pending-approvals) HOẶC làm widget thật sau
+- pages/products.html: input SKU bỏ dấu required, sửa placeholder "Để trống → tự sinh"
+
+## QUY ƯỚC CODE
+- Comment tiếng Việt
+- camelCase JS, snake_case DB
+- Format tiền: 1.000.000 đ (vi-VN)
+- Toast: showToast(msg, 'success'|'error'|'warning')
+- Modal: class="modal show"
+- Sidebar: .sidebar-item, .sidebar-parent, .sidebar-child, .sidebar-submenu
+- Màu chủ đạo: gradient #667eea → #764ba2
+- KHÔNG xóa cứng: dùng deleted_at hoặc is_active=false
+- Mọi thứ CHUNG (session, sidebar, theme, toast, status, idle, lunch, search) → layout.js
+- File page CHỈ chứa logic riêng của trang đó
+
+## LƯU Ý KHI TIẾP TỤC
+1. KHÔNG đoán code cũ — yêu cầu user paste file hiện tại
+2. Gửi FULL FILE, KHÔNG "tìm dòng X thay Y"
+3. Test sau mỗi bước — F12 Console + screenshot
+4. Session dùng chung window.supabaseClient từ config.js
+5. RLS lỗi 403 → GRANT ALL ON table TO authenticated
+
+## LỖI THƯỜNG GẶP ĐÃ FIX
+- Identifier already declared → trùng hàm layout.js vs page.js (đã tách xong)
+- HTML link nhầm JS file (suppliers.html link products.js) → đã fix
+- Customize dashboard save không work → do query nhầm item panel, đã fix bằng scope trong .dash-main
+- Customize dashboard không sort được → thiếu bước re-append widget theo config order, đã fix
+- Modal customers nhảy size → CSS min-height 620px + flex column
+
+## PROMPT CHO CHAT MỚI
+"Tui đang làm web ERP 'Công ty TNHH Một Con Sen' (HTML/CSS/JS + Supabase + Vercel). [paste tóm tắt này]. Hiện tại tui cần [mô tả việc]. Tui sẽ gửi file hiện tại, bạn viết lại FULL FILE để paste."

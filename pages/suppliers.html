@@ -11,7 +11,8 @@
         })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
+<link rel="stylesheet" href="../assets/css/layout.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/products.css">
     <link rel="stylesheet" href="../assets/css/suppliers.css">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -33,6 +34,7 @@
         <button class="dash-menu-toggle" onclick="toggleSidebar()">
             <i data-lucide="menu"></i>
         </button>
+
         <div class="dash-logo">
             <span class="dash-logo-icon">🐱</span>
             <span class="dash-logo-text">Công ty TNHH Một Con Sen</span>
@@ -48,7 +50,7 @@
         <button class="dash-icon-btn" onclick="toggleTheme()" title="Đổi giao diện">
             <i data-lucide="sun" id="theme-icon"></i>
         </button>
-        <button class="dash-icon-btn" onclick="alert('Thông báo')" title="Thông báo">
+        <button class="dash-icon-btn" onclick="toggleNotifications(event)" title="Thông báo">
             <i data-lucide="bell"></i>
             <span class="dash-badge">3</span>
         </button>
@@ -388,6 +390,7 @@
 <div id="toast" class="toast"></div>
 
 <script src="../assets/js/config.js"></script>
+<script src="../assets/js/layout.js"></script>
 <script src="../assets/js/suppliers.js"></script>
 </body>
 </html>

@@ -11,51 +11,44 @@
         })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-
-<!-- ===== SPLASH SCREEN ===== -->
 <div id="app-splash">
     <div class="splash-content">
         <div class="splash-logo">🐱</div>
         <div class="splash-name">Công ty TNHH Một Con Sen</div>
-        <div class="splash-loader">
-            <span></span><span></span><span></span>
-        </div>
+        <div class="splash-loader"><span></span><span></span><span></span></div>
         <div class="splash-text">Đang tải...</div>
     </div>
 </div>
 
-<!-- ===== HEADER ===== -->
 <header class="dash-header">
     <div class="dash-header-left">
         <button class="dash-menu-toggle" onclick="toggleSidebar()">
             <i data-lucide="menu"></i>
         </button>
+
         <div class="dash-logo">
             <span class="dash-logo-icon">🐱</span>
             <span class="dash-logo-text">Công ty TNHH Một Con Sen</span>
         </div>
     </div>
-
     <div class="dash-header-center">
         <div class="dash-search-wrap">
             <i data-lucide="search" class="dash-search-icon"></i>
-            <input type="text" id="global-search" placeholder="Tìm kiếm..." autocomplete="off"
-                oninput="handleSearchInput(this.value)" onfocus="showSearchResults()">
-            <div class="dash-search-results" id="search-results"></div>
+            <input type="text" id="global-search" placeholder="Tìm kiếm..." autocomplete="off">
         </div>
     </div>
-
     <div class="dash-header-right">
         <button class="dash-icon-btn" onclick="toggleTheme()" title="Đổi giao diện">
             <i data-lucide="sun" id="theme-icon"></i>
         </button>
-        <button class="dash-icon-btn" onclick="toggleNotifications()" title="Thông báo">
+        <button class="dash-icon-btn" onclick="toggleNotifications(event)" title="Thông báo">
             <i data-lucide="bell"></i>
-            <span class="dash-badge" id="notif-badge">3</span>
+            <span class="dash-badge" id="notif-badge" style="display: none;">0</span>
         </button>
         <div class="dash-user" onclick="toggleUserMenu(event)">
             <div class="dash-user-avatar" id="user-avatar">?</div>
@@ -66,14 +59,12 @@
     </div>
 </header>
 
-<!-- ===== USER MENU ===== -->
 <div class="dash-user-menu" id="user-menu">
     <div class="dash-user-menu-header">
         <div class="dash-user-avatar-lg" id="user-avatar-menu">?</div>
         <div>
             <div class="dash-user-menu-name" id="user-name-menu">...</div>
             <div class="dash-user-menu-role" id="user-role-menu">...</div>
-            <div class="dash-user-menu-status" id="user-status-menu">...</div>
         </div>
     </div>
     <div class="dash-user-menu-divider"></div>
@@ -83,54 +74,34 @@
     <button class="dash-user-menu-item" onclick="changePassword()">
         <i data-lucide="key"></i><span>Đổi mật khẩu</span>
     </button>
-    <button class="dash-user-menu-item" onclick="requestLeave()">
-        <i data-lucide="plane"></i><span>Xin nghỉ phép</span>
-    </button>
     <div class="dash-user-menu-divider"></div>
     <button class="dash-user-menu-item danger" onclick="confirmLogout()">
         <i data-lucide="log-out"></i><span>Đăng xuất</span>
     </button>
 </div>
 
-<!-- ===== NOTIFICATION ===== -->
 <div class="dash-notif-menu" id="notif-menu">
     <div class="dash-notif-header">
         <strong>🔔 Thông báo</strong>
         <button onclick="markAllRead()">Đã đọc</button>
     </div>
-    <div class="dash-notif-list">
-        <div class="dash-notif-item unread">
-            <div class="dash-notif-icon">🎯</div>
-            <div class="dash-notif-content">
-                <div class="dash-notif-title">Task mới</div>
-                <div class="dash-notif-desc">Báo giá KH An - 15:30</div>
-            </div>
+    <div class="dash-notif-list" id="notif-list">
+        <div style="padding: 40px 20px; text-align: center; color: #94a3b8;">
+            <div style="font-size: 48px; margin-bottom: 12px; opacity: 0.4;">🔔</div>
+            <p style="font-size: 13px;">Chưa có thông báo nào</p>
         </div>
-        <div class="dash-notif-item unread">
-            <div class="dash-notif-icon">⚠️</div>
-            <div class="dash-notif-content">
-                <div class="dash-notif-title">Cảnh báo kho</div>
-                <div class="dash-notif-desc">SP A sắp hết (còn 3)</div>
-            </div>
-        </div>
-    </div>
-    <div class="dash-notif-footer">
-        <button onclick="viewAllNotifications()">Xem tất cả →</button>
     </div>
 </div>
 
-<!-- ===== LAYOUT ===== -->
 <div class="dash-layout">
     <aside class="dash-sidebar" id="sidebar">
         <nav class="dash-sidebar-nav" id="sidebar-nav"></nav>
     </aside>
-
     <main class="dash-main" id="dash-main">
         <div class="dash-welcome">
             <h1 class="dash-welcome-title">👋 Xin chào, <span id="welcome-name">...</span></h1>
             <p class="dash-welcome-date" id="welcome-date">...</p>
         </div>
-
         <div class="dash-controls">
             <div class="dash-time-filter">
                 <button class="time-btn" data-period="week" onclick="setTimeFilter('week')">Tuần</button>
@@ -142,8 +113,7 @@
                 <i data-lucide="settings"></i><span>Tùy chỉnh</span>
             </button>
         </div>
-
-        <div class="dash-kpi-grid">
+        <div class="dash-kpi-grid" data-widget="kpi-cards">
             <div class="dash-kpi-card" data-kpi="doanhthu">
                 <div class="dash-kpi-header"><span class="dash-kpi-icon">💰</span><span class="dash-kpi-label">Doanh thu</span></div>
                 <div class="dash-kpi-value">—</div>
@@ -165,14 +135,22 @@
                 <div class="dash-kpi-trend">Đang tải...</div>
             </div>
         </div>
-
-        <div class="dash-placeholder">
+        <div class="dash-placeholder" data-widget="recent-activity">
             <p>📊 Các widget khác sẽ được thêm sau (Biểu đồ, Top NCC, Hoạt động...)</p>
+            <!-- Widget Top NCC -->
+<div class="dash-widget" data-widget="top-suppliers" style="background: #fff; border-radius: 14px; padding: 20px; margin-top: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 0;">🏭 Top nhà cung cấp</h3>
+        <a href="suppliers.html" style="font-size: 12px; color: #667eea; font-weight: 700; text-decoration: none;">Xem tất cả →</a>
+    </div>
+    <div id="top-suppliers-body">
+        <div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">Đang tải...</div>
+    </div>
+</div>
         </div>
     </main>
 </div>
 
-<!-- ===== POPUP NGHỈ TRƯA ===== -->
 <div id="lunch-popup" class="lunch-popup" onclick="if(event.target===this)closeLunchPopup()">
     <div class="lunch-card">
         <div class="lunch-flower lunch-flower-1">🌸</div>
@@ -187,7 +165,6 @@
     </div>
 </div>
 
-<!-- ===== POPUP SESSION EXPIRED ===== -->
 <div id="session-popup" class="session-popup">
     <div class="session-card">
         <div class="session-icon">🔒</div>
@@ -197,7 +174,6 @@
     </div>
 </div>
 
-<!-- ===== POPUP CONFIRM LOGOUT ===== -->
 <div id="logout-popup" class="logout-popup" onclick="if(event.target===this)closeLogoutConfirm()">
     <div class="logout-card">
         <div class="logout-icon">🚪</div>
@@ -210,7 +186,6 @@
     </div>
 </div>
 
-<!-- ===== CUSTOMIZE PANEL ===== -->
 <div class="dash-customize-panel" id="customize-panel">
     <div class="dash-customize-header">
         <strong>⚙️ Tùy chỉnh Dashboard</strong>
@@ -218,19 +193,15 @@
     </div>
     <div class="dash-customize-body">
         <p class="dash-customize-hint">Kéo thả để sắp xếp · Tick để hiện/ẩn</p>
-        <div class="dash-customize-item" data-widget="kpi">
+        <div class="dash-customize-item" data-widget="kpi-cards">
             <span class="drag-handle">☰</span><input type="checkbox" checked><span>💰 4 KPI Cards</span>
         </div>
-        <div class="dash-customize-item" data-widget="revenue_chart">
-            <span class="drag-handle">☰</span><input type="checkbox" checked><span>📈 Biểu đồ doanh thu</span>
-        </div>
-        <div class="dash-customize-item" data-widget="top_suppliers">
+
+        <div class="dash-customize-item" data-widget="top-suppliers">
             <span class="drag-handle">☰</span><input type="checkbox" checked><span>🏭 Top nhà cung cấp</span>
         </div>
-        <div class="dash-customize-item" data-widget="approvals">
-            <span class="drag-handle">☰</span><input type="checkbox" checked><span>🔔 Cần duyệt</span>
-        </div>
-        <div class="dash-customize-item" data-widget="activity">
+
+        <div class="dash-customize-item" data-widget="recent-activity">
             <span class="drag-handle">☰</span><input type="checkbox" checked><span>📌 Hoạt động gần đây</span>
         </div>
     </div>
@@ -241,6 +212,7 @@
 </div>
 
 <script src="../assets/js/config.js"></script>
+<script src="../assets/js/layout.js"></script>
 <script src="../assets/js/dashboard.js"></script>
 </body>
 </html>

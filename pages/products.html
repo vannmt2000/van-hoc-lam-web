@@ -11,7 +11,8 @@
         })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
+<link rel="stylesheet" href="../assets/css/layout.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/products.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -33,6 +34,7 @@
         <button class="dash-menu-toggle" onclick="toggleSidebar()">
             <i data-lucide="menu"></i>
         </button>
+
         <div class="dash-logo">
             <span class="dash-logo-icon">🐱</span>
             <span class="dash-logo-text">Công ty TNHH Một Con Sen</span>
@@ -50,7 +52,7 @@
         <button class="dash-icon-btn" onclick="toggleTheme()" title="Đổi giao diện">
             <i data-lucide="sun" id="theme-icon"></i>
         </button>
-        <button class="dash-icon-btn" onclick="alert('Thông báo')" title="Thông báo">
+        <button class="dash-icon-btn" onclick="toggleNotifications(event)" title="Thông báo">
             <i data-lucide="bell"></i>
             <span class="dash-badge">3</span>
         </button>
@@ -101,17 +103,20 @@
                 </h1>
                 <p class="page-subtitle">Danh sách sản phẩm, nhóm hàng và nhà cung cấp</p>
             </div>
-            <div class="page-actions">
-                <button class="btn btn-secondary" onclick="openManageGroupsModal()">
-                    <i data-lucide="folder-cog"></i> Quản Lý Nhóm
-                </button>
-                <button class="btn btn-secondary" onclick="openAddSupplierModal()">
-                    <i data-lucide="factory"></i> Thêm NCC
-                </button>
-                <button class="btn btn-primary" onclick="openAddProductModal()">
-                    <i data-lucide="plus-circle"></i> Thêm Sản Phẩm
-                </button>
-            </div>
+<div class="page-actions">
+    <button class="btn btn-secondary" onclick="openExportModal()" title="In hoặc xuất danh sách">
+        <i data-lucide="printer"></i> In / Xuất
+    </button>
+    <button class="btn btn-secondary" onclick="openManageGroupsModal()">
+        <i data-lucide="folder-cog"></i> Quản Lý Nhóm
+    </button>
+    <button class="btn btn-secondary" onclick="openAddSupplierModal()">
+        <i data-lucide="plus"></i> Thêm NCC
+    </button>
+    <button class="btn btn-primary" onclick="openAddProductModal()">
+        <i data-lucide="plus"></i> Thêm Sản Phẩm
+    </button>
+</div>
         </div>
 
         <div class="products-stats">
@@ -156,7 +161,7 @@
         <div class="filter-bar">
             <div class="filter-search">
                 <i data-lucide="search"></i>
-                <input type="text" id="product-search" placeholder="Tìm SKU, tên sản phẩm..." oninput="applyFilters()">
+                <input type="text" id="product-search" placeholder="Tìm Mã sản phẩm, tên sản phẩm..." oninput="applyFilters()">
             </div>
             <div class="filter-group">
                 <select id="filter-group" onchange="applyFilters()">
@@ -177,32 +182,32 @@
         </div>
 
         <div class="table-wrapper">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">Ảnh</th>
-                        <th class="sortable" data-sort="sku" style="width: 120px;">SKU <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th class="sortable" data-sort="name">Tên sản phẩm <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th class="sortable" data-sort="group_name" style="width: 130px;">Nhóm <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th style="width: 90px;">ĐVT</th>
-                        <th class="sortable" data-sort="purchase_price" style="width: 130px; text-align: right;">Giá nhập <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th class="sortable" data-sort="price" style="width: 130px; text-align: right;">Giá bán <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th style="width: 80px; text-align: center;">VAT</th>
-                        <th class="sortable" data-sort="stock" style="width: 100px; text-align: center;">Tồn kho <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th class="sortable" data-sort="supplier_name" style="width: 180px;">🏭 Nhà cung cấp <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th class="sortable" data-sort="imported_at" style="width: 120px; text-align: center;">📅 Ngày nhập <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-                        <th style="width: 130px; text-align: center;">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody id="products-tbody">
-                    <tr>
-                        <td colspan="12" class="table-loading">
-                            <i data-lucide="loader-2" class="spin"></i>
-                            Đang tải dữ liệu...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+<table class="data-table">
+<thead>
+    <tr>
+        <th style="text-align: center;">
+            <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this.checked)">
+        </th>
+        <th>Ảnh</th>
+        <th class="sortable" data-sort="sku">Mã sản phẩm <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="name">Tên sản phẩm <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="group_name">Nhóm <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th>ĐVT</th>
+        <th class="sortable" data-sort="stock" style="text-align: center;">Tồn kho <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="supplier_name">Nhà cung cấp <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="imported_at">Ngày nhập <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th>Thao tác</th>
+    </tr>
+</thead>
+    <tbody id="products-tbody">
+        <tr>
+            <td colspan="10" class="table-loading">
+                <i data-lucide="loader-2" class="spin"></i>
+                Đang tải dữ liệu...
+            </td>
+        </tr>
+    </tbody>
+</table>
         </div>
 
         <div class="pagination" id="pagination"></div>
@@ -250,8 +255,9 @@
                         <div class="form-group" style="flex: 1;">
                             <div class="form-grid-2">
                                 <div class="form-group">
-                                    <label>Mã SKU <span class="required">*</span></label>
-                                    <input type="text" id="prod-sku" required placeholder="VD: SP-007" oninput="this.value = this.value.toUpperCase()">
+<label>Mã sản phẩm <span style="color:#94a3b8; font-size:11px; font-weight:500;">(để trống → tự sinh)</span></label>
+<input type="text" id="prod-sku" placeholder="Để trống → VD: SP-001" oninput="this.value = this.value.toUpperCase()">
+<div style="font-size: 11px; color: #94a3b8; margin-top: 4px; font-style: italic;">💡 Để trống Mã sản phẩm để hệ thống tự sinh mã (SP-001, SP-002...)</div>
                                 </div>
                                 <div class="form-group">
                                     <label>Đơn vị tính <span class="required">*</span></label>
@@ -592,11 +598,35 @@
     </div>
 </div>
 
+<!-- Modal Export/Print dùng chung -->
+<div id="modal-export" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="export-title">In / Xuất dữ liệu</h3>
+            <button class="modal-close" onclick="closeExportModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="export-subtitle" style="font-size: 13px; color: #64748b; margin-bottom: 16px;"></div>
+            <div id="export-body"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeExportModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="doExport()">
+                <i data-lucide="download"></i> Xuất
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== TOAST ===== -->
 <div id="toast" class="toast"></div>
 
 <script src="../assets/js/config.js"></script>
+<script src="../assets/js/layout.js"></script>
+<script src="../assets/js/export.js"></script>
 <script src="../assets/js/products.js"></script>
+
+
 
 </body>
 </html>

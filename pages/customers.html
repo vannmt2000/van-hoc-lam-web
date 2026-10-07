@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khách hàng - Công ty TNHH Một Con Sen</title>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme-preload', theme);
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="../assets/css/layout.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/products.css">
+    <link rel="stylesheet" href="../assets/css/customers.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<!-- ===== SPLASH ===== -->
+<div id="app-splash">
+    <div class="splash-content">
+        <div class="splash-logo">🐱</div>
+        <div class="splash-name">Công ty TNHH Một Con Sen</div>
+        <div class="splash-loader"><span></span><span></span><span></span></div>
+        <div class="splash-text">Đang tải...</div>
+    </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="dash-header">
+    <div class="dash-header-left">
+        <button class="dash-menu-toggle" onclick="toggleSidebar()">
+            <i data-lucide="menu"></i>
+        </button>
+        <div class="dash-logo">
+            <span class="dash-logo-icon">🐱</span>
+            <span class="dash-logo-text">Công ty TNHH Một Con Sen</span>
+        </div>
+    </div>
+    <div class="dash-header-center">
+        <div class="dash-search-wrap">
+            <i data-lucide="search" class="dash-search-icon"></i>
+            <input type="text" id="global-search" placeholder="Tìm kiếm..." autocomplete="off">
+        </div>
+    </div>
+    <div class="dash-header-right">
+        <button class="dash-icon-btn" onclick="toggleTheme()" title="Đổi giao diện">
+            <i data-lucide="sun" id="theme-icon"></i>
+        </button>
+        <button class="dash-icon-btn" onclick="toggleNotifications(event)" title="Thông báo">
+            <i data-lucide="bell"></i>
+            <span class="dash-badge" id="notif-badge" style="display: none;">0</span>
+        </button>
+        <div class="dash-user" onclick="toggleUserMenu(event)">
+            <div class="dash-user-avatar" id="user-avatar">?</div>
+            <span class="dash-user-name" id="user-name">Đang tải...</span>
+            <span class="dash-user-status-dot" id="status-dot"></span>
+            <i data-lucide="chevron-down" class="dash-user-caret"></i>
+        </div>
+    </div>
+</header>
+
+<!-- ===== USER MENU ===== -->
+<div class="dash-user-menu" id="user-menu">
+    <div class="dash-user-menu-header">
+        <div class="dash-user-avatar-lg" id="user-avatar-menu">?</div>
+        <div>
+            <div class="dash-user-menu-name" id="user-name-menu">...</div>
+            <div class="dash-user-menu-role" id="user-role-menu">...</div>
+        </div>
+    </div>
+    <div class="dash-user-menu-divider"></div>
+    <button class="dash-user-menu-item" onclick="goToProfile()">
+        <i data-lucide="user"></i><span>Hồ sơ của tôi</span>
+    </button>
+    <button class="dash-user-menu-item" onclick="changePassword()">
+        <i data-lucide="key"></i><span>Đổi mật khẩu</span>
+    </button>
+    <div class="dash-user-menu-divider"></div>
+    <button class="dash-user-menu-item danger" onclick="confirmLogout()">
+        <i data-lucide="log-out"></i><span>Đăng xuất</span>
+    </button>
+</div>
+
+<!-- ===== NOTIFICATION ===== -->
+<div class="dash-notif-menu" id="notif-menu">
+    <div class="dash-notif-header">
+        <strong>🔔 Thông báo</strong>
+        <button onclick="markAllRead()">Đã đọc</button>
+    </div>
+    <div class="dash-notif-list" id="notif-list">
+        <div style="padding: 40px 20px; text-align: center; color: #94a3b8;">
+            <div style="font-size: 48px; margin-bottom: 12px; opacity: 0.4;">🔔</div>
+            <p style="font-size: 13px;">Chưa có thông báo nào</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== LAYOUT ===== -->
+<div class="dash-layout">
+    <aside class="dash-sidebar" id="sidebar">
+        <nav class="dash-sidebar-nav" id="sidebar-nav"></nav>
+    </aside>
+
+    <main class="dash-main" id="dash-main">
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <i data-lucide="users" class="page-icon"></i>
+                    Quản Lý Khách Hàng
+                </h1>
+                <p class="page-subtitle">Danh sách khách hàng cá nhân và doanh nghiệp</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-primary" onclick="openAddCustomerModal('individual')">
+                    <i data-lucide="user-plus"></i> Thêm KH Cá Nhân
+                </button>
+                <button class="btn btn-secondary" onclick="openAddCustomerModal('business')">
+                    <i data-lucide="building-2"></i> Thêm KH Doanh Nghiệp
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="products-stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;">
+                    <i data-lucide="users"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Tổng KH</span>
+                    <span class="stat-value" id="stat-total">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">
+                    <i data-lucide="user"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Cá nhân</span>
+                    <span class="stat-value" id="stat-individual">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #f3e8ff; color: #8b5cf6;">
+                    <i data-lucide="building-2"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Doanh nghiệp</span>
+                    <span class="stat-value" id="stat-business">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fef3c7; color: #d97706;">
+                    <i data-lucide="star"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">VIP</span>
+                    <span class="stat-value" id="stat-vip">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTER -->
+        <div class="filter-bar">
+            <div class="filter-search">
+                <i data-lucide="search"></i>
+                <input type="text" id="customer-search" placeholder="Tìm tên,  Số điện thoại, email, MST..." oninput="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <select id="filter-type" onchange="applyFilters()">
+                    <option value="all">Tất cả loại</option>
+                    <option value="individual">👤 Cá nhân</option>
+                    <option value="business">🏢 Doanh nghiệp</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <select id="filter-tier" onchange="applyFilters()">
+                    <option value="all">Tất cả phân loại</option>
+                    <option value="new">Mới</option>
+                    <option value="regular">Thường</option>
+                    <option value="vip">⭐ VIP</option>
+                </select>
+            </div>
+            <button class="btn-icon" onclick="resetFilters()" title="Reset">
+                <i data-lucide="rotate-ccw"></i>
+            </button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrapper">
+            <table class="data-table customers-table">
+<thead>
+    <tr>
+        <th style="width: 55px; text-align: center;">Loại</th>
+        <th class="sortable" data-sort="code" style="width: 90px;">Mã <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="full_name" style="width: 200px;">Họ tên <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="company_name" style="width: 200px;">Doanh nghiệp <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="phone" style="width: 130px;">Số điện thoại <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th style="width: 140px;">Nguồn</th>
+        <th class="sortable" data-sort="tier" style="width: 110px; text-align: center;">Phân loại <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th style="width: 120px; text-align: center;">Trạng thái</th>
+        <th style="width: 140px; text-align: center;">Thao tác</th>
+    </tr>
+</thead>
+                <tbody id="customers-tbody">
+                    <tr>
+                        <td colspan="9" class="table-loading">
+                            <i data-lucide="loader-2" class="spin"></i>
+                            Đang tải dữ liệu...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination" id="pagination"></div>
+    </main>
+</div>
+
+<!-- =====================================================
+     MODAL: THÊM/SỬA KHÁCH HÀNG
+     ===================================================== -->
+<div id="modal-customer" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 id="modal-customer-title">Thêm Khách Hàng</h3>
+            <button class="modal-close" onclick="closeCustomerModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <form id="form-customer" onsubmit="handleSaveCustomer(event)">
+            <input type="hidden" id="cust-id" value="">
+            <input type="hidden" id="cust-type" value="individual">
+            <div class="modal-body">
+                <!-- LOẠI KH -->
+                <div class="form-section">
+                    <h4 class="form-section-title">
+                        <i data-lucide="info"></i>
+                        Loại Khách Hàng
+                    </h4>
+                    <div class="customer-type-selector" id="customer-type-selector">
+                        <button type="button" class="type-option active" data-type="individual" onclick="selectCustomerType('individual')">
+                            <span class="type-icon">👤</span>
+                            <span class="type-label">Cá nhân</span>
+                            <span class="type-desc">Khách lẻ, mua cá nhân</span>
+                        </button>
+                        <button type="button" class="type-option" data-type="business" onclick="selectCustomerType('business')">
+                            <span class="type-icon">🏢</span>
+                            <span class="type-label">Doanh nghiệp</span>
+                            <span class="type-desc">Công ty, mua sỉ</span>
+                        </button>
+                    </div>
+                    <p class="form-hint" id="type-hint" style="margin-top: 10px;">
+                        💡 Chọn loại KH ngay từ đầu. Không thể đổi sau khi lưu.
+                    </p>
+                </div>
+
+                <!-- SECTION: MÃ + TÊN (dùng chung) -->
+                <div class="form-section">
+                    <h4 class="form-section-title" id="section-basic-title">
+                        <i data-lucide="user"></i>
+                        Thông Tin Cơ Bản
+                    </h4>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Mã KH / Mã DN</label>
+                            <input type="text" id="cust-code" placeholder="Để trống → tự sinh" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div class="form-group">
+                            <label id="label-full-name">Họ tên <span class="required">*</span></label>
+                            <input type="text" id="cust-name" required placeholder="Nguyễn Văn An">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: CÁ NHÂN -->
+                <div class="form-section" id="section-individual">
+                    <h4 class="form-section-title">
+                        <i data-lucide="user-circle"></i>
+                        Thông Tin Cá Nhân
+                    </h4>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Ngày sinh</label>
+                            <input type="date" id="cust-dob">
+                        </div>
+                        <div class="form-group">
+                            <label>Giới tính</label>
+                            <select id="cust-gender">
+                                <option value="">-- Chưa xác định --</option>
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>CMND / CCCD</label>
+                        <input type="text" id="cust-id-card" placeholder="079095001234">
+                        <small class="form-hint">💡 Chỉ nhập khi cần (trả góp, hàng giá trị cao)</small>
+                    </div>
+                </div>
+
+                <!-- SECTION: DOANH NGHIỆP -->
+                <div class="form-section" id="section-business" style="display: none;">
+                    <h4 class="form-section-title">
+                        <i data-lucide="building-2"></i>
+                        Thông Tin Doanh Nghiệp
+                    </h4>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Mã số thuế <span class="required">*</span></label>
+                            <input type="text" id="cust-tax-code" placeholder="0301234567">
+                            <small class="form-hint">10 hoặc 13 số</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Chức vụ người đại diện</label>
+                            <select id="cust-position">
+                                <option value="">-- Chọn --</option>
+                                <option value="Giám đốc">Giám đốc</option>
+                                <option value="Phó Giám đốc">Phó Giám đốc</option>
+                                <option value="Trưởng phòng">Trưởng phòng</option>
+                                <option value="Nhân viên mua hàng">Nhân viên mua hàng</option>
+                                <option value="Kế toán">Kế toán</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ giao hàng</label>
+                        <input type="text" id="cust-delivery-address" placeholder="Để trống → dùng địa chỉ chung">
+                    </div>
+                    <div class="form-group">
+    <label>Người đại diện</label>
+    <div class="rep-mode-toggle">
+        <button type="button" class="rep-mode-btn active" data-mode="existing" onclick="setRepMode('existing')">
+            <i data-lucide="search"></i> Chọn từ KH có sẵn
+        </button>
+        <button type="button" class="rep-mode-btn" data-mode="manual" onclick="setRepMode('manual')">
+            <i data-lucide="edit-3"></i> Nhập tay
+        </button>
+    </div>
+    
+    <!-- Mode: Chọn từ KH có sẵn -->
+    <div id="rep-mode-existing" style="margin-top: 10px;">
+        <div class="combobox-wrap">
+            <input type="text" id="cust-rep-search" placeholder="Tìm KH cá nhân theo tên/ Số điện thoại..." autocomplete="off" oninput="searchRepCustomer(this.value)" onfocus="showRepList()">
+            <button type="button" class="combobox-toggle" onclick="toggleRepList(event)" tabindex="-1">
+                <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="combobox-dropdown" id="rep-dropdown"></div>
+        </div>
+        <input type="hidden" id="cust-rep-id" value="">
+        <small class="form-hint">💡 Chọn KH cá nhân có sẵn. Người này sẽ được link làm đại diện.</small>
+    </div>
+    
+    <!-- Mode: Nhập tay -->
+    <div id="rep-mode-manual" style="display: none; margin-top: 10px;">
+        <div class="form-grid-2">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label style="font-size: 12px;">Họ tên người đại diện</label>
+                <input type="text" id="cust-rep-name" placeholder="Nguyễn Văn An">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label style="font-size: 12px;"> Số điện thoại người đại diện</label>
+                <input type="tel" id="cust-rep-phone" placeholder="0901234567">
+            </div>
+        </div>
+        <small class="form-hint" style="margin-top: 6px; display: block;">
+            💡 Không link với KH nào. Nếu muốn link → chuyển sang "Chọn từ KH có sẵn".
+        </small>
+    </div>
+</div>
+                </div>
+
+                <!-- SECTION: LIÊN HỆ (dùng chung) -->
+                <div class="form-section">
+                    <h4 class="form-section-title">
+                        <i data-lucide="phone"></i>
+                        Liên Hệ
+                    </h4>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" id="cust-phone" required placeholder="0901234567">
+                            <small class="form-hint">10-11 số, bắt đầu bằng 0</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="cust-email" placeholder="an@email.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <input type="text" id="cust-address" placeholder="123 Lê Lợi, Q.1, TP.HCM">
+                    </div>
+                </div>
+
+                <!-- SECTION: PHÂN LOẠI -->
+                <div class="form-section">
+                    <h4 class="form-section-title">
+                        <i data-lucide="tag"></i>
+                        Phân Loại & Nguồn
+                    </h4>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Phân loại</label>
+                            <select id="cust-tier">
+                                <option value="new">Mới</option>
+                                <option value="regular">Thường</option>
+                                <option value="vip">⭐ VIP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nguồn khách hàng</label>
+                            <select id="cust-source">
+                                <option value="">-- Chưa xác định --</option>
+                                <option value="🏪 Cửa hàng">🏪 Cửa hàng</option>
+                                <option value="🌐 Website">🌐 Website</option>
+                                <option value="💬 Zalo">💬 Zalo</option>
+                                <option value="📘 Facebook">📘 Facebook</option>
+                                <option value="🛒 Shopee">🛒 Shopee</option>
+                                <option value="🛒 Lazada">🛒 Lazada</option>
+                                <option value="🎵 TikTok Shop">🎵 TikTok Shop</option>
+                                <option value="👥 Được giới thiệu">👥 Được giới thiệu</option>
+                                <option value="📞 Gọi điện">📞 Gọi điện</option>
+                                <option value="❓ Khác">❓ Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Phương thức TT ưu tiên</label>
+                            <select id="cust-pref-payment">
+                                <option value="">-- Chưa xác định --</option>
+                                <option value="cash">💵 Tiền mặt</option>
+                                <option value="bank_transfer">🏦 Chuyển khoản</option>
+                                <option value="mixed">🔄 Linh hoạt</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Điều khoản thanh toán</label>
+                            <select id="cust-payment-term">
+                                <option value="immediate">Trả ngay</option>
+                                <option value="net_15">Trong 15 ngày</option>
+                                <option value="net_30">Trong 30 ngày</option>
+                                <option value="net_60">Trong 60 ngày</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GHI CHÚ -->
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="cust-note" rows="2" placeholder="Ghi chú nội bộ..."></textarea>
+                    </div>
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="cust-active" checked>
+                        <span>Khách hàng đang hoạt động</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCustomerModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="save"></i> Lưu Khách Hàng
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL: CHI TIẾT KHÁCH HÀNG (4 TABS)
+     ===================================================== -->
+<div id="modal-detail" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 id="detail-title">Chi Tiết Khách Hàng</h3>
+            <button class="modal-close" onclick="closeDetailModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="detail-tabs">
+            <button class="detail-tab active" data-tab="info" onclick="switchDetailTab('info')">
+                <i data-lucide="info"></i> Thông tin
+            </button>
+            <button class="detail-tab" data-tab="orders" onclick="switchDetailTab('orders')">
+                <i data-lucide="package"></i> Đơn hàng
+            </button>
+            <button class="detail-tab" data-tab="warranty" onclick="switchDetailTab('warranty')">
+                <i data-lucide="shield-check"></i> Bảo hành
+            </button>
+            <button class="detail-tab" data-tab="activity" onclick="switchDetailTab('activity')">
+                <i data-lucide="activity"></i> Hoạt động
+            </button>
+        </div>
+        <div class="modal-body" id="detail-content"></div>
+    </div>
+</div>
+
+<!-- =====================================================
+     MODAL: CONFIRM
+     ===================================================== -->
+<div id="modal-confirm" class="modal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h3 id="confirm-title">Xác nhận</h3>
+            <button class="modal-close" onclick="closeConfirmModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="confirm-message">Bạn có chắc?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">Hủy</button>
+            <button type="button" class="btn btn-danger" id="confirm-btn">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast"></div>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/layout.js"></script>
+<script src="../assets/js/customers.js"></script>
+</body>
+</html>
