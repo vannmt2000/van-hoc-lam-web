@@ -402,12 +402,12 @@ function goToPage(page) {
 // FILTERS
 // ============================================
 function applyFilters() {
-    const search = (document.getElementById('supplier-search').value || '').toLowerCase().trim();
+    const search = normalizeVN(document.getElementById('supplier-search').value || '');
     const status = document.getElementById('filter-status').value;
 
     filteredSuppliers = allSuppliers.filter(s => {
         if (search) {
-            const hay = (s.code + ' ' + s.name + ' ' + (s.tax_code || '') + ' ' + (s.phone || '') + ' ' + (s.contact_person || '')).toLowerCase();
+            const hay = normalizeVN((s.code || '') + ' ' + (s.name || '') + ' ' + (s.tax_code || '') + ' ' + (s.phone || '') + ' ' + (s.contact_person || ''));
             if (hay.indexOf(search) === -1) return false;
         }
         if (status === 'active' && s.is_active === false) return false;

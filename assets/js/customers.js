@@ -18,6 +18,54 @@ let detailTab = 'info';
 let repCustomerId = null;
 let repMode = 'existing';
 
+
+// ============================================
+// CONFIG EXPORT
+// ============================================
+window.EXPORT_CONFIG = {
+    entityName: 'danh sách khách hàng',
+    filePrefix: 'khach-hang',
+    getFilteredRows: () => filteredCustomers,
+    columns: [
+        { key: 'stt',    label: 'STT',           defaultOn: true,  getValue: (row) => filteredCustomers.indexOf(row) + 1 },
+        { key: 'code',   label: 'Mã KH',         defaultOn: true,  getValue: (r) => r.code || '' },
+        { key: 'type',   label: 'Loại',          defaultOn: true,  getValue: (r) => r.customer_type === 'business' ? 'Doanh nghiệp' : 'Cá nhân' },
+        { key: 'name',   label: 'Họ tên',        defaultOn: true,  getValue: (r) => r.full_name || '' },
+        { key: 'company',label: 'Công ty',       defaultOn: true,  getValue: (r) => r.company_name || '' },
+        { key: 'tax',    label: 'Mã số thuế',    defaultOn: true,  getValue: (r) => r.tax_code || '' },
+        { key: 'phone',  label: 'Số điện thoại', defaultOn: true,  getValue: (r) => r.phone || '' },
+        { key: 'email',  label: 'Email',         defaultOn: false, getValue: (r) => r.email || '' },
+        { key: 'address',label: 'Địa chỉ',       defaultOn: false, getValue: (r) => r.address || '' },
+        { key: 'tier',   label: 'Phân loại',     defaultOn: true,  getValue: (r) => r.tier === 'vip' ? 'VIP' : (r.tier === 'regular' ? 'Thường' : 'Mới') },
+        { key: 'source', label: 'Nguồn',         defaultOn: true,  getValue: (r) => r.source || '' },
+        { key: 'status', label: 'Trạng thái',    defaultOn: true,  getValue: (r) => r.is_active === false ? 'Ngưng' : 'Hoạt động' }
+    ]
+};
+
+// ============================================
+// ROW SELECTION
+// ============================================
+window.toggleRowSelect = function(id, checked) {
+    if (checked) window.EXPORT_SELECTED.add(id);
+    else window.EXPORT_SELECTED.delete(id);
+    updateSelectAllCheckbox();
+};
+
+window.toggleSelectAllRows = function(checked) {
+    if (checked) filteredCustomers.forEach(c => window.EXPORT_SELECTED.add(c.id));
+    else filteredCustomers.forEach(c => window.EXPORT_SELECTED.delete(c.id));
+    renderCustomers();
+};
+
+function updateSelectAllCheckbox() {
+    const all = document.getElementById('select-all-rows');
+    if (!all) return;
+    const allChecked = filteredCustomers.length > 0 &&
+        filteredCustomers.every(c => window.EXPORT_SELECTED.has(c.id));
+    all.checked = allChecked;
+}
+
+
 const VALIDATORS = {
     phone: (v) => {
         if (!v) return 'Vui lòng nhập số điện thoại';
@@ -221,7 +269,7 @@ function renderCustomers() {
     const tbody = document.getElementById('customers-tbody');
     if (!tbody) return;
     if (filteredCustomers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="table-loading">' +
+        tbody.innerHTML = '<tr><td colspan="10" class="table-loading">' +
             '<i data-lucide="users"></i> Chưa có khách hàng nào.' +
             '</td></tr>';
         if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -289,7 +337,9 @@ function renderCustomers() {
 
         const trStyle = isInactive ? 'opacity: 0.5;' : '';
 
+        const isChecked = window.EXPORT_SELECTED.has(c.id);
         html += '<tr style="' + trStyle + '">';
+        html += '<td style="text-align: center;"><input type="checkbox" class="row-checkbox" ' + (isChecked ? 'checked' : '') + ' onchange="toggleRowSelect(\'' + c.id + '\', this.checked)"></td>';
         html += '<td style="text-align: center;">' + typeBadge + '</td>';
         html += '<td><span class="' + codeClass + '">' + escapeHtml(c.code || '—') + '</span></td>';
         html += '<td>';
@@ -315,6 +365,7 @@ function renderCustomers() {
     tbody.innerHTML = html;
     if (typeof lucide !== 'undefined') lucide.createIcons();
     renderPagination();
+    updateSelectAllCheckbox();
 }
 
 // ============================================
@@ -365,16 +416,16 @@ function goToPage(page) {
 // FILTERS
 // ============================================
 function applyFilters() {
-    const search = (document.getElementById('customer-search').value || '').toLowerCase().trim();
+    const search = normalizeVN(document.getElementById('customer-search').value || '');
     const typeFilter = document.getElementById('filter-type').value;
     const tierFilter = document.getElementById('filter-tier').value;
 
     filteredCustomers = allCustomers.filter(c => {
         if (search) {
-            const searchable = [
+             const searchable = normalizeVN([
                 c.code || '', c.full_name || '', c.company_name || '',
                 c.phone || '', c.tax_code || ''
-            ].join(' ').toLowerCase();
+            ].join(' '));
             if (searchable.indexOf(search) === -1) return false;
         }
         if (typeFilter !== 'all' && c.customer_type !== typeFilter) return false;

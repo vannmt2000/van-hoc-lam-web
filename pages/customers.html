@@ -114,8 +114,11 @@
                 </h1>
                 <p class="page-subtitle">Danh sách khách hàng cá nhân và doanh nghiệp</p>
             </div>
-            <div class="page-actions">
-                <button class="btn btn-primary" onclick="openAddCustomerModal('individual')">
+<div class="page-actions">
+    <button class="btn btn-secondary" onclick="openExportModal()" title="In hoặc xuất danh sách">
+        <i data-lucide="printer"></i> In / Xuất
+    </button>
+    <button class="btn btn-primary" onclick="openAddCustomerModal('individual')">
                     <i data-lucide="user-plus"></i> Thêm KH Cá Nhân
                 </button>
                 <button class="btn btn-secondary" onclick="openAddCustomerModal('business')">
@@ -195,20 +198,23 @@
             <table class="data-table customers-table">
 <thead>
     <tr>
-        <th style="width: 55px; text-align: center;">Loại</th>
-        <th class="sortable" data-sort="code" style="width: 90px;">Mã <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-        <th class="sortable" data-sort="full_name" style="width: 200px;">Họ tên <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-        <th class="sortable" data-sort="company_name" style="width: 200px;">Doanh nghiệp <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-        <th class="sortable" data-sort="phone" style="width: 130px;">Số điện thoại <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-        <th style="width: 140px;">Nguồn</th>
-        <th class="sortable" data-sort="tier" style="width: 110px; text-align: center;">Phân loại <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
-        <th style="width: 120px; text-align: center;">Trạng thái</th>
-        <th style="width: 140px; text-align: center;">Thao tác</th>
+        <th style="text-align: center;">
+            <input type="checkbox" id="select-all-rows" onchange="toggleSelectAllRows(this.checked)">
+        </th>
+        <th>Loại</th>
+        <th class="sortable" data-sort="code">Mã <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="full_name">Họ tên <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="company_name">Doanh nghiệp <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th class="sortable" data-sort="phone">Số điện thoại <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th>Nguồn</th>
+        <th class="sortable" data-sort="tier" style="text-align: center;">Phân loại <i data-lucide="arrow-up-down" class="sort-icon"></i></th>
+        <th style="text-align: center;">Trạng thái</th>
+        <th style="text-align: center;">Thao tác</th>
     </tr>
 </thead>
                 <tbody id="customers-tbody">
                     <tr>
-                        <td colspan="9" class="table-loading">
+                        <td colspan="10" class="table-loading">
                             <i data-lucide="loader-2" class="spin"></i>
                             Đang tải dữ liệu...
                         </td>
@@ -525,11 +531,36 @@
     </div>
 </div>
 
+
+<!-- =====================================================
+     MODAL: EXPORT / PRINT
+     ===================================================== -->
+<div id="modal-export" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="export-title">In / Xuất dữ liệu</h3>
+            <button class="modal-close" onclick="closeExportModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="export-subtitle" style="font-size: 13px; color: #64748b; margin-bottom: 16px;"></div>
+            <div id="export-body"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeExportModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="doExport()">
+                <i data-lucide="download"></i> Xuất
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== TOAST ===== -->
 <div id="toast" class="toast"></div>
 
 <script src="../assets/js/config.js"></script>
 <script src="../assets/js/layout.js"></script>
+<script src="../assets/js/export.js"></script>
 <script src="../assets/js/customers.js"></script>
+
 </body>
 </html>

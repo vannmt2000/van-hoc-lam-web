@@ -32,9 +32,9 @@ window.EXPORT_CONFIG = {
         { key: 'unit',      label: 'Đơn vị',        defaultOn: true,  getValue: (r) => r.unit || 'Cái' },
         { key: 'stock',     label: 'Tồn kho',       defaultOn: true,  getValue: (r) => r.stock || 0 },
         { key: 'min_stock', label: 'Tồn tối thiểu', defaultOn: false, getValue: (r) => r.min_stock || 0 },
-        { key: 'purchase',  label: 'Giá nhập',      defaultOn: false, getValue: (r) => formatMoney(r.purchase_price) },
-        { key: 'price',     label: 'Giá bán',       defaultOn: false, getValue: (r) => formatMoney(r.price) },
-        { key: 'vat',       label: 'VAT',           defaultOn: false, getValue: (r) => (r.vat_percent || 0) + '%' },
+{ key: 'purchase',  label: 'Giá nhập (VNĐ)', defaultOn: false, getValue: (r) => Number(r.purchase_price) || 0 },
+{ key: 'price',     label: 'Giá bán (VNĐ)',  defaultOn: false, getValue: (r) => Number(r.price) || 0 },
+{ key: 'vat',       label: 'VAT (%)',        defaultOn: false, getValue: (r) => Number(r.vat_percent) || 0 },
         { key: 'supplier',  label: 'Nhà cung cấp',  defaultOn: true,  getValue: (r) => r.suppliers ? r.suppliers.name : '' },
         { key: 'location',  label: 'Vị trí kho',    defaultOn: false, getValue: (r) => r.location || '' },
         { key: 'barcode',   label: 'Barcode',       defaultOn: false, getValue: (r) => r.barcode || '' },
@@ -466,13 +466,13 @@ function goToPage(page) {
 // FILTERS
 // ============================================
 function applyFilters() {
-    const search = (document.getElementById('product-search').value || '').toLowerCase().trim();
+    const search = normalizeVN(document.getElementById('product-search').value || '');
     const groupId = document.getElementById('filter-group').value;
     const status = document.getElementById('filter-status').value;
 
     filteredProducts = allProducts.filter(p => {
         if (search) {
-            const hay = (p.sku + ' ' + p.name + ' ' + (p.description || '')).toLowerCase();
+            const hay = normalizeVN((p.sku || '') + ' ' + (p.name || '') + ' ' + (p.description || ''));
             if (hay.indexOf(search) === -1) return false;
         }
         if (groupId !== 'all' && p.group_id !== groupId) return false;

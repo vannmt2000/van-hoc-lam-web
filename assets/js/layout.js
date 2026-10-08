@@ -340,6 +340,17 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+function normalizeVN(str) {
+    if (!str) return '';
+    return String(str)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .toLowerCase()
+        .trim();
+}
+
 function formatDate(d) {
     if (!d) return '—';
     const date = new Date(d);
