@@ -5,6 +5,56 @@
 
 const supabaseClient = window.supabaseClient;
 
+
+// ============================================
+// CONFIG EXPORT
+// ============================================
+window.EXPORT_CONFIG = {
+    entityName: 'danh sách nhà cung cấp',
+    filePrefix: 'nha-cung-cap',
+    getFilteredRows: () => filteredSuppliers,
+    columns: [
+        { key: 'stt',        label: 'STT',            defaultOn: true,  getValue: (row) => filteredSuppliers.indexOf(row) + 1 },
+        { key: 'code',       label: 'Mã NCC',         defaultOn: true,  getValue: (r) => r.code || '' },
+        { key: 'name',       label: 'Tên nhà cung cấp', defaultOn: true, getValue: (r) => r.name || '' },
+        { key: 'tax_code',   label: 'Mã số thuế',     defaultOn: true,  getValue: (r) => r.tax_code || '' },
+        { key: 'contact',    label: 'Người liên hệ',  defaultOn: true,  getValue: (r) => r.contact_person || '' },
+        { key: 'phone',      label: 'Số điện thoại',  defaultOn: true,  getValue: (r) => r.phone || '' },
+        { key: 'email',      label: 'Email',          defaultOn: false, getValue: (r) => r.email || '' },
+        { key: 'address',    label: 'Địa chỉ',        defaultOn: false, getValue: (r) => r.address || '' },
+        { key: 'bank',       label: 'Ngân hàng',      defaultOn: false, getValue: (r) => r.bank_name || '' },
+        { key: 'bank_acc',   label: 'Số tài khoản',   defaultOn: false, getValue: (r) => r.bank_account || '' },
+        { key: 'rating',     label: 'Đánh giá',       defaultOn: false, getValue: (r) => (r.rating || 0) + '/5' },
+        { key: 'prod_count', label: 'Số SP cung cấp', defaultOn: true,  getValue: (r) => r.product_count || 0 },
+        { key: 'has_inv',    label: 'Có hóa đơn',     defaultOn: false, getValue: (r) => r.has_invoice === false ? 'Không' : 'Có' },
+        { key: 'status',     label: 'Trạng thái',     defaultOn: true,  getValue: (r) => r.is_active === false ? 'Ngưng giao dịch' : 'Đang giao dịch' }
+    ]
+};
+
+// ============================================
+// ROW SELECTION
+// ============================================
+window.toggleRowSelect = function(id, checked) {
+    if (checked) window.EXPORT_SELECTED.add(id);
+    else window.EXPORT_SELECTED.delete(id);
+    updateSelectAllCheckbox();
+};
+
+window.toggleSelectAllRows = function(checked) {
+    if (checked) filteredSuppliers.forEach(s => window.EXPORT_SELECTED.add(s.id));
+    else filteredSuppliers.forEach(s => window.EXPORT_SELECTED.delete(s.id));
+    renderSuppliers();
+};
+
+function updateSelectAllCheckbox() {
+    const all = document.getElementById('select-all-rows');
+    if (!all) return;
+    const allChecked = filteredSuppliers.length > 0 &&
+        filteredSuppliers.every(s => window.EXPORT_SELECTED.has(s.id));
+    all.checked = allChecked;
+}
+
+
 // ===== STATE =====
 let allSuppliers = [];
 let allProducts = [];
@@ -221,7 +271,7 @@ function renderSuppliers() {
     if (!tbody) return;
 
     if (filteredSuppliers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="table-loading">' +
+        tbody.innerHTML = '<tr><td colspan="9" class="table-loading">' +
             '<i data-lucide="factory"></i> Chưa có nhà cung cấp nào. Bấm "Thêm Nhà Cung Cấp" để bắt đầu.' +
             '</td></tr>';
         if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -270,8 +320,10 @@ function renderSuppliers() {
 
         const trStyle = isInactive ? 'opacity: 0.6;' : '';
 
-        html += '<tr style="' + trStyle + '">';
-        html += '<td><span class="supplier-code">' + escapeHtml(s.code || '—') + '</span></td>';
+const isChecked = window.EXPORT_SELECTED.has(s.id);
+html += '<tr style="' + trStyle + '">';
+html += '<td style="text-align: center;"><input type="checkbox" class="row-checkbox" ' + (isChecked ? 'checked' : '') + ' onchange="toggleRowSelect(\'' + s.id + '\', this.checked)"></td>';
+html += '<td><span class="supplier-code">' + escapeHtml(s.code || '—') + '</span></td>';
         html += '<td>';
         html += '<span class="supplier-name">' + escapeHtml(s.name) + '</span>';
         if (s.address) html += '<span class="supplier-address">📍 ' + escapeHtml(s.address) + '</span>';
@@ -299,6 +351,7 @@ function renderSuppliers() {
     tbody.innerHTML = html;
     if (typeof lucide !== 'undefined') lucide.createIcons();
     renderPagination();
+    updateSelectAllCheckbox();
 }
 
 // ============================================

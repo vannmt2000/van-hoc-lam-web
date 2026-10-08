@@ -1798,19 +1798,3 @@ body.dark-mode .sidebar-child.active {
     color: #fff !important;
 }
 
-/* Căn giữa chữ trong HEADER table */
-.data-table thead th {
-    text-align: center;
-}
-
-/* Nhưng sort icon vẫn nằm cạnh chữ cho dễ nhìn */
-.data-table thead th .sort-icon {
-    vertical-align: middle;
-}
-
-/* Riêng cột Tên sản phẩm để căn trái cho dễ đọc (tên dài) */
-.data-table thead th[data-sort="name"] {
-    text-align: left;
-}
-
-

@@ -1419,3 +1419,147 @@ body.dark-mode.sidebar-collapsed .sidebar-item:hover::before {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ============================================ */
+/* TABLE CHUẨN — HEADER CĂN GIỮA + IN ĐẬM */
+/* Áp dụng cho TẤT CẢ bảng có class .data-table */
+/* ============================================ */
+
+.data-table thead th {
+    text-align: center !important;
+    font-weight: 800 !important;
+    vertical-align: middle !important;
+}
+
+/* Sort icon nằm cùng dòng với chữ */
+.data-table thead th .sort-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+/* Body cell mặc định căn trái (cho dễ đọc) */
+.data-table tbody td {
+    vertical-align: middle;
+}
+
+/* Ngoại lệ: cột có class .col-center thì body cũng căn giữa */
+.data-table tbody td.col-center {
+    text-align: center;
+}
+
+/* Ngoại lệ: cột có class .col-right thì body căn phải */
+.data-table tbody td.col-right {
+    text-align: right;
+}
+
+
+
+/* ============================================ */
+/* EXPORT MODAL — DARK MODE */
+/* ============================================ */
+body.dark-mode #modal-export .modal-content {
+    background: #1e293b;
+    border: 1px solid #334155;
+}
+
+body.dark-mode #modal-export .modal-header {
+    background: #1e293b;
+    border-bottom-color: #334155;
+}
+
+body.dark-mode #modal-export .modal-header h3 {
+    color: #f1f5f9;
+}
+
+body.dark-mode #modal-export .modal-body {
+    background: #1e293b;
+}
+
+body.dark-mode #modal-export .modal-footer {
+    background: #0f172a;
+    border-top-color: #334155;
+}
+
+/* Subtitle */
+body.dark-mode #export-subtitle {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode #export-subtitle b {
+    color: #a5b4fc !important;
+}
+
+/* Section title */
+body.dark-mode .export-section-title {
+    color: #f1f5f9;
+}
+
+body.dark-mode .export-toggle-all {
+    color: #a5b4fc;
+}
+
+body.dark-mode .export-toggle-all:hover {
+    background: #334155;
+}
+
+/* Grid chọn cột */
+body.dark-mode .export-columns-grid {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+body.dark-mode .export-col-checkbox {
+    color: #e2e8f0;
+}
+
+body.dark-mode .export-col-checkbox:hover {
+    background: #334155;
+}
+
+body.dark-mode .export-col-checkbox span {
+    color: #e2e8f0;
+}
+
+/* Format options */
+body.dark-mode .export-format-option {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+body.dark-mode .export-format-option:hover {
+    border-color: #667eea;
+    background: #1e293b;
+}
+
+body.dark-mode .export-format-option.active {
+    background: #312e81;
+    border-color: #a5b4fc;
+    box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.15);
+}
+
+body.dark-mode .export-format-label {
+    color: #f1f5f9;
+}
+
+body.dark-mode .export-format-desc {
+    color: #94a3b8;
+}
+
+/* Nút Hủy trong modal export */
+body.dark-mode #modal-export .btn-secondary {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
+}
+
+body.dark-mode #modal-export .btn-secondary:hover {
+    background: #475569;
+    color: #f1f5f9;
+}
+
+/* Nút Xuất (primary) — giữ nguyên gradient nhưng làm sáng chữ */
+body.dark-mode #modal-export .btn-primary {
+    color: #fff;
+}
